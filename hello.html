@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Asistente AI & Automatización - Side Panel</title>
+    <style>
+      html, body {
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background-color: #f4f6f8;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .side-panel-wrapper {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        padding: 12px;
+        box-sizing: border-box;
+        overflow: hidden;
+      }
+      .panel-header {
+        background-color: #075E54;
+        color: white;
+        padding: 10px 14px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .panel-header h2 {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 600;
+      }
+      .tabs {
+        display: flex;
+        margin-bottom: 10px;
+        border-bottom: 2px solid #e0e0e0;
+        background: #ffffff;
+        border-radius: 6px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      }
+      .tab {
+        flex: 1;
+        text-align: center;
+        padding: 8px 2px;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #555;
+        transition: all 0.2s ease;
+      }
+      .tab.active {
+        border-bottom: 3px solid #25D366;
+        font-weight: bold;
+        color: #075E54;
+        background: #f9fbf9;
+      }
+      .tab-content {
+        flex: 1;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding-right: 2px;
+      }
+      .tab-content.hidden {
+        display: none !important;
+      }
+      button {
+        background-color: #25D366;
+        color: white;
+        border: none;
+        padding: 8px 10px;
+        cursor: pointer;
+        margin-bottom: 6px;
+        width: 100%;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        transition: background-color 0.2s ease;
+      }
+      button:hover:not(:disabled) {
+        background-color: #128C7E;
+      }
+      button:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+      }
+      .action-buttons {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 6px;
+      }
+      .action-buttons button {
+        flex: 1;
+        margin-bottom: 0;
+      }
+      .message-area, #ticketLogsDiv, #analyticsReportContainer {
+        border: 1px solid #cfd8dc;
+        padding: 8px;
+        border-radius: 6px;
+        background: #ffffff;
+        overflow-y: auto;
+        font-size: 11px;
+      }
+      #fetchedMessages { flex: 1; min-height: 110px; }
+      #generatedOutput { flex: 1; min-height: 110px; }
+      #ticketLogsDiv { flex: 1; min-height: 160px; }
+      #analyticsReportContainer { flex: 1; min-height: 200px; }
+
+      #fetchedMessages ul, #generatedOutput ul {
+        margin-left: 0; 
+        padding-left: 0;
+        list-style-type: none;
+      }
+      #fetchedMessages li {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 6px;
+      }
+      #fetchedMessages li input[type="checkbox"] {
+        margin-right: 8px;
+        margin-top: 2px;
+        flex-shrink: 0;
+      }
+      .input-group {
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+      }
+      .input-group label {
+        margin-right: 8px;
+        flex-shrink: 0;
+        font-size: 11px;
+      }
+      .input-group input[type="number"], .input-group input[type="text"], .input-group input[type="password"], select {
+        width: 100%;
+        padding: 5px 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 11px;
+        box-sizing: border-box;
+      }
+      .hidden {
+        display: none;
+      }
+      #sendToChat {
+        background-color: #075E54;
+        margin-top: 6px;
+      }
+      #sendToChat:hover:not(:disabled) {
+        background-color: #053c37;
+      }
+      .user-guide {
+        background-color: #e8f5e9;
+        border: 1px solid #c8e6c9;
+        border-radius: 6px;
+        padding: 6px 10px;
+        margin-bottom: 6px;
+        font-size: 11px;
+        color: #1b5e20;
+      }
+      .user-guide summary {
+        font-weight: bold;
+        cursor: pointer;
+        color: #075E54;
+        outline: none;
+      }
+      .user-guide ol {
+        margin: 4px 0 2px 0;
+        padding-left: 16px;
+      }
+      .user-guide li {
+        margin-bottom: 3px;
+        line-height: 1.3;
+      }
+      .auto-card {
+        background-color: #e8eaf6;
+        border: 1px solid #c5cae9;
+        border-radius: 6px;
+        padding: 8px;
+        margin-bottom: 6px;
+      }
+      .status-badge {
+        display: inline-block;
+        padding: 2px 7px;
+        border-radius: 10px;
+        font-size: 10px;
+        font-weight: bold;
+        color: white;
+      }
+      .badge-on { background-color: #2e7d32; }
+      .badge-off { background-color: #c62828; }
+      .badge-critical { background-color: #c62828; color: white; }
+      .badge-warning { background-color: #ef6c00; color: white; }
+      .badge-normal { background-color: #2e7d32; color: white; }
+      .badge-confirmed { background-color: #00796b; color: white; padding: 1px 5px; border-radius: 4px; font-size: 9px; margin-left: 4px; }
+      .kpi-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 5px;
+        margin-bottom: 6px;
+      }
+      .kpi-card {
+        background: #ffffff;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        padding: 5px 6px;
+        text-align: center;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+      }
+      .kpi-title { font-size: 9px; color: #6c757d; font-weight: bold; text-transform: uppercase; }
+      .kpi-value { font-size: 12px; color: #075E54; font-weight: bold; margin-top: 2px; }
+      .analytics-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 10px;
+        margin-top: 4px;
+      }
+      .analytics-table th, .analytics-table td {
+        border: 1px solid #e0e0e0;
+        padding: 4px 5px;
+        text-align: left;
+      }
+      .analytics-table th {
+        background-color: #075E54;
+        color: white;
+        font-weight: bold;
+      }
+      .filter-bar {
+        background: #ffffff;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        padding: 6px;
+        margin-bottom: 6px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="side-panel-wrapper">
+      <div class="panel-header">
+        <h2>Asistente AI & Teams</h2>
+        <span style="font-size: 11px; opacity: 0.9;">v1.5 Panel Lateral</span>
+      </div>
+      
+      <div class="tabs">
+        <div class="tab active" data-tab="actions">Acciones</div>
+        <div class="tab" data-tab="automation">Automatización</div>
+        <div class="tab" data-tab="analytics">Analitica</div>
+        <div class="tab" data-tab="settings">Configuraci&oacute;n</div>
+      </div>
+      
+      <!-- Pestaña de Acciones AI -->
+      <div id="actionsTab" class="tab-content">
+        <details class="user-guide" open>
+          <summary>Guia de Uso Rapido</summary>
+          <ol>
+            <li>Abre <strong>WhatsApp Web</strong> en el navegador.</li>
+            <li>Haz clic en <strong>"Obtener Mensajes"</strong> para cargar el chat activo.</li>
+            <li>Selecciona mensajes para resumir, responder o buscar tareas pendientes.</li>
+          </ol>
+        </details>
+
+        <div class="input-group">
+          <label for="messageCount">Obtener &uacute;ltimos:</label>
+          <input type="number" id="messageCount" value="10" min="1" max="100" style="width: 60px;">
+          <span style="margin-left: 5px; font-size: 11px;">mensajes</span>
+        </div>
+        
+        <div class="action-buttons">
+          <button id="fetchMessages">Obtener Mensajes</button>
+        </div>
+
+        <h3 style="margin: 4px 0; font-size: 12px; color: #075E54;">Mensajes Obtenidos:</h3>
+        <div id="fetchedMessages" class="message-area">Obt&eacute;n mensajes de WhatsApp arriba.</div>
+
+        <div class="input-group" style="margin-top: 4px; justify-content: center;">
+          <label for="summarizeCount">Resumir &uacute;ltimos:</label>
+          <input type="number" id="summarizeCount" value="10" min="1" style="width: 60px;">
+          <span style="margin-left: 5px; font-size: 11px;">mensajes</span>
+        </div>
+
+        <div class="button-group" style="display: flex; flex-direction: column; gap: 4px;">
+          <div style="display: flex; gap: 4px;">
+            <button id="summarizeMessages" disabled>Resumir</button>
+            <button id="generateReply" disabled>Generar Respuesta</button>
+          </div>
+          <div style="display: flex; gap: 4px;">
+            <button id="tldrSelected" disabled style="background-color: #34495e;">TL;DR R&aacute;pido</button>
+            <button id="findActionItems" disabled style="background-color: #2980b9;">Buscar Tareas</button>
+          </div>
+        </div>
+        
+        <h3 style="margin: 4px 0 2px 0; font-size: 12px; color: #075E54;">Resultado Generado:</h3>
+        <div id="generatedOutput" class="message-area">El resultado aparecer&aacute; aqu&iacute;.</div>
+        <div id="contextInfo" class="context-area" style="margin-top: 4px; font-size: 0.85em; color: #555;"></div>
+        <div id="analysisInfo" class="context-area" style="margin-top: 4px; font-size: 0.85em; color: #555; border-top: 1px dashed #ccc; padding-top: 4px;"></div>
+        
+        <button id="sendToChat" class="hidden" style="margin-top: 6px;">Enviar Resultado al Chat</button>
+      </div>
+
+      <!-- Pestaña de Automatización Soporte -->
+      <div id="automationTab" class="tab-content hidden">
+        <div class="auto-card">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <strong style="color: #1a237e;">Modo Automatizaci&oacute;n Activo</strong>
+              <div style="font-size: 10px; color: #3f51b5;">WhatsApp &rarr; MS Teams</div>
+            </div>
+            <input type="checkbox" id="autoSupportSwitch" checked style="width: 18px; height: 18px; cursor: pointer;">
+          </div>
+          <div style="margin-top: 6px; font-size: 11px; color: #333;">
+            Estado actual: <span id="autoStatusBadge" class="status-badge badge-on">ACTIVO</span>
+          </div>
+        </div>
+
+        <div class="auto-card" style="background-color: #f0f4f8; border-color: #d9e2ec;">
+          <strong style="color: #102a43; font-size: 12px; display: block; margin-bottom: 6px;">Configuración de Grupos Activos</strong>
+          
+          <div style="margin-bottom: 6px;">
+            <label for="waGroupInput" style="font-size: 10px; font-weight: bold; color: #128C7E; display: block; margin-bottom: 2px;">Grupo de WhatsApp Monitoreado:</label>
+            <input type="text" id="waGroupInput" value="Soporte en Sitio Akros">
+          </div>
+
+          <div style="margin-bottom: 6px;">
+            <label for="teamsGroupInput" style="font-size: 10px; font-weight: bold; color: #464EB8; display: block; margin-bottom: 2px;">Grupo / Canal de Teams Destino:</label>
+            <input type="text" id="teamsGroupInput" value="Atención de Soporte">
+          </div>
+
+          <button id="saveGroupsBtn" style="background-color: #075E54; margin-bottom: 0; padding: 5px 8px; font-size: 11px;">Guardar Grupos</button>
+        </div>
+
+        <details class="user-guide" open style="background-color: #eef2ff; border-color: #c7d2fe; color: #1e1b4b;">
+          <summary>Flujo Unidireccional</summary>
+          <ol style="margin-top: 4px;">
+            <li>Detecta mensajes con n&uacute;meros de ticket (ej: <code>tk AKR-RQ-1000</code>) en WhatsApp.</li>
+            <li>Inyecta y publica la solicitud en <strong>Microsoft Teams</strong> sin esperas ni bloqueos.</li>
+            <li>Registra la actividad en tiempo real en la bit&aacute;cora inferior.</li>
+          </ol>
+        </details>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px; margin-bottom: 4px;">
+          <h3 style="margin: 0; font-size: 12px; color: #075E54;">Registro de Actividad en Vivo:</h3>
+          <button id="clearLogsBtn" style="background-color: #c62828; color: white; border: none; margin: 0; padding: 3px 6px; font-size: 10px; border-radius: 4px; cursor: pointer; width: auto;">Limpiar Bitacora</button>
+        </div>
+        <div id="ticketLogsDiv">No hay eventos registrados a&uacute;n.</div>
+      </div>
+      
+      <!-- Pestaña de Visor Analítico Interno -->
+      <div id="analyticsTab" class="tab-content hidden">
+        <div class="action-buttons">
+          <button id="runAnalyticsBtn" style="background-color: #075E54;">Procesar Nuevos Mensajes</button>
+          <button id="resetTimestampBtn" style="background-color: #7f8c8d;">Procesar Todo</button>
+          <button id="loadMockAnalyticsBtn" style="background-color: #34495e;">Ejemplo</button>
+        </div>
+
+        <div id="lastTimestampInfo" style="font-size: 10px; color: #666; margin-bottom: 4px; text-align: right;">Sincronizacion: No registrada</div>
+
+        <div class="filter-bar">
+          <div style="display: flex; gap: 4px;">
+            <select id="analyticsRegionFilter" style="flex: 1;">
+              <option value="TODAS">Todas las Regiones</option>
+              <option value="REGION NORTE">Región Norte</option>
+              <option value="REGION COSTA">Región Costa</option>
+              <option value="REGION SUR">Región Sur</option>
+              <option value="REGION CENTRO">Región Centro</option>
+            </select>
+
+            <select id="analyticsViewSelect" style="flex: 1;">
+              <option value="consolidated">Consolidado Estratégico</option>
+              <option value="agencyVsChat">Agencia vs Mención Chat</option>
+            </select>
+          </div>
+          
+          <input type="text" id="analyticsSearchInput" placeholder="Filtrar por técnico o agencia...">
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-title">Registros Cruce</div>
+            <div id="kpiTotalCount" class="kpi-value">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Agencias Afectadas</div>
+            <div id="kpiAgenciesCount" class="kpi-value">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Cuellos de Botella</div>
+            <div id="kpiBottlenecksCount" class="kpi-value">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Técnico Frecuente</div>
+            <div id="kpiTopTech" class="kpi-value" style="font-size: 11px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">N/A</div>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+          <h3 style="margin: 0; font-size: 11px; color: #075E54;">Reporte Estratégico Nacional</h3>
+        </div>
+
+        <div id="analyticsReportContainer">
+          <!-- Renderizado dinámico del reporte analítico -->
+        </div>
+      </div>
+      
+      <!-- Pestaña de Configuración -->
+      <div id="settingsTab" class="tab-content hidden">
+        <div class="input-group" style="background-color: #ffffff; padding: 6px 8px; border-radius: 6px; border: 1px solid #ddd; justify-content: space-between; margin-bottom: 8px;">
+          <label for="aiEnabledSwitch" style="font-weight: bold; color: #075E54; margin: 0;">Motor de IA Activado:</label>
+          <input type="checkbox" id="aiEnabledSwitch" checked style="width: 16px; height: 16px; cursor: pointer;">
+        </div>
+
+        <div style="margin-bottom: 8px;">
+          <label for="aiProvider" style="display: block; font-size: 11px; font-weight: bold; margin-bottom: 2px;">Proveedor IA:</label>
+          <select id="aiProvider" style="width: 100%; padding: 5px; border-radius: 4px; border: 1px solid #ccc; font-size: 11px;">
+            <option value="gemini">Google Gemini (gemini-3.6-flash)</option>
+            <option value="groq">Groq (qwen/qwen3.8-27b)</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom: 8px;">
+          <label for="geminiApiKey" style="display: block; font-size: 11px; font-weight: bold; margin-bottom: 2px;">API Key Gemini:</label>
+          <input type="password" id="geminiApiKey" placeholder="Clave API de Google Gemini">
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <label for="groqApiKey" style="display: block; font-size: 11px; font-weight: bold; margin-bottom: 2px;">API Key Groq:</label>
+          <input type="password" id="groqApiKey" placeholder="Clave API de Groq (gsk_...)">
+        </div>
+
+        <button id="saveSettings">Guardar Configuraci&oacute;n</button>
+
+        <div style="font-size: 11px; color: #666; margin-top: 8px;">
+          <p><strong>Obtener claves de API:</strong></p>
+          <ul style="padding-left: 14px; margin-top: 4px;">
+            <li><strong>Gemini:</strong> <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a></li>
+            <li><strong>Groq:</strong> <a href="https://console.groq.com/keys" target="_blank">Console de Groq</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <script src="analytics.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

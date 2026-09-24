@@ -1,0 +1,60 @@
+{
+  "update_url": "https://clients2.google.com/service/update2/crx",
+  "name": "Whatsapp AI Assistant & Teams Automation",
+  "manifest_version": 3,
+  "description": "Resume chats de WhatsApp con IA y automatiza el envío de tickets de soporte hacia Microsoft Teams.",
+  "version": "1.4",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "tabs",
+    "storage",
+    "notifications",
+    "sidePanel"
+  ],
+  "host_permissions": [
+    "https://web.whatsapp.com/*",
+    "https://teams.microsoft.com/*",
+    "https://*.teams.microsoft.com/*",
+    "https://teams.cloud.microsoft/*",
+    "https://*.teams.cloud.microsoft/*",
+    "https://teams.live.com/*",
+    "https://generativelanguage.googleapis.com/*",
+    "https://api.groq.com/*",
+    "https://html.duckduckgo.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "side_panel": {
+    "default_path": "hello.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://web.whatsapp.com/*",
+        "https://teams.microsoft.com/*",
+        "https://*.teams.microsoft.com/*",
+        "https://teams.cloud.microsoft/*",
+        "https://*.teams.cloud.microsoft/*",
+        "https://teams.live.com/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "icons": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  }
+}
