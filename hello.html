@@ -202,12 +202,16 @@
       .badge-on { background-color: #2e7d32; }
       .badge-off { background-color: #c62828; }
       .badge-critical { background-color: #c62828; color: white; }
-      .badge-warning { background-color: #ef6c00; color: white; }
-      .badge-normal { background-color: #2e7d32; color: white; }
       .badge-confirmed { background-color: #00796b; color: white; padding: 1px 5px; border-radius: 4px; font-size: 9px; margin-left: 4px; }
+      .bank-badge { display: inline-block; font-size: 8.5px; font-weight: 600; color: #555555; background-color: #f0f0f0; border: 1px solid #dcdcdc; padding: 1px 6px; border-radius: 10px; margin-left: 4px; line-height: 1.2; vertical-align: middle; }
+      .source-badge { display: inline-block; font-size: 8.5px; font-weight: 700; padding: 1px 5px; border-radius: 4px; margin-left: 3px; line-height: 1.2; vertical-align: middle; }
+      .badge-whatsapp { background-color: #e8f5e9; color: #1b5e20; border: 1px solid #c8e6c9; }
+      .badge-aranda { background-color: #eef2ff; color: #3730a3; border: 1px solid #c7d2fe; }
+      .provider-cloud { display: inline-block; font-size: 7.5px; font-weight: 600; letter-spacing: 0.1px; color: #075E54; background-color: rgba(7, 94, 84, 0.06); border: 1px solid rgba(7, 94, 84, 0.18); padding: 0px 4px; border-radius: 6px; margin-bottom: 1px; line-height: 1.15; max-width: 130px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle; }
+      .provider-cloud.not-in-list { color: #c62828; background-color: rgba(198, 40, 40, 0.06); border-color: rgba(198, 40, 40, 0.18); }
       .kpi-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr 1fr 1fr;
         gap: 5px;
         margin-bottom: 6px;
       }
@@ -247,6 +251,78 @@
         flex-direction: column;
         gap: 4px;
       }
+      .view-toggle-bar {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 6px;
+      }
+      .view-btn {
+        flex: 1;
+        padding: 6px 4px;
+        font-size: 10.5px;
+        font-weight: 700;
+        border-radius: 4px;
+        border: 1px solid #075E54;
+        background-color: #f0f4f8;
+        color: #075E54;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-bottom: 0;
+        text-align: center;
+      }
+      .view-btn:hover {
+        background-color: #e0ece9;
+      }
+      .view-btn.active {
+        background-color: #075E54;
+        color: #ffffff;
+        border-color: #075E54;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      }
+      .search-input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 100%;
+        margin-top: 2px;
+      }
+      .search-input-wrapper input[type="text"] {
+        width: 100%;
+        padding: 5px 24px 5px 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 11px;
+        box-sizing: border-box;
+      }
+      .clear-search-btn {
+        position: absolute;
+        right: 4px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none !important;
+        border: none !important;
+        color: #888;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 18px !important;
+        height: 18px !important;
+        line-height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50% !important;
+        transition: color 0.2s ease, background-color 0.2s ease;
+      }
+      .clear-search-btn:hover {
+        color: #c62828 !important;
+        background-color: rgba(198, 40, 40, 0.12) !important;
+      }
+      .clear-search-btn.hidden {
+        display: none !important;
+      }
     </style>
   </head>
   <body>
@@ -260,6 +336,7 @@
         <div class="tab active" data-tab="actions">Acciones</div>
         <div class="tab" data-tab="automation">Automatización</div>
         <div class="tab" data-tab="analytics">Analitica</div>
+        <div class="tab" data-tab="noTicket">Sin Ticket</div>
         <div class="tab" data-tab="settings">Configuraci&oacute;n</div>
       </div>
       
@@ -367,7 +444,11 @@
           <button id="loadMockAnalyticsBtn" style="background-color: #34495e;">Ejemplo</button>
         </div>
 
-        <div id="lastTimestampInfo" style="font-size: 10px; color: #666; margin-bottom: 4px; text-align: right;">Sincronizacion: No registrada</div>
+        <!-- Botones Fijos de Selección de Vista -->
+        <div class="view-toggle-bar">
+          <button id="btnViewConsolidated" class="view-btn active" data-view="consolidated">Consolidado Estratégico</button>
+          <button id="btnViewAgencyVsChat" class="view-btn" data-view="agencyVsChat">Agencia vs Mención</button>
+        </div>
 
         <div class="filter-bar">
           <div style="display: flex; gap: 4px;">
@@ -379,13 +460,15 @@
               <option value="REGION CENTRO">Región Centro</option>
             </select>
 
-            <select id="analyticsViewSelect" style="flex: 1;">
-              <option value="consolidated">Consolidado Estratégico</option>
-              <option value="agencyVsChat">Agencia vs Mención Chat</option>
+            <select id="analyticsProviderFilter" style="flex: 1;">
+              <option value="TODOS">Todos los Proveedores</option>
             </select>
           </div>
           
-          <input type="text" id="analyticsSearchInput" placeholder="Filtrar por técnico o agencia...">
+          <div class="search-input-wrapper">
+            <input type="text" id="analyticsSearchInput" placeholder="Filtrar por técnico o agencia...">
+            <button type="button" id="clearAnalyticsSearchBtn" class="clear-search-btn hidden" title="Limpiar búsqueda">&times;</button>
+          </div>
         </div>
 
         <div class="kpi-grid">
@@ -396,10 +479,6 @@
           <div class="kpi-card">
             <div class="kpi-title">Agencias Afectadas</div>
             <div id="kpiAgenciesCount" class="kpi-value">0</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-title">Cuellos de Botella</div>
-            <div id="kpiBottlenecksCount" class="kpi-value">0</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-title">Técnico Frecuente</div>
@@ -413,6 +492,70 @@
 
         <div id="analyticsReportContainer">
           <!-- Renderizado dinámico del reporte analítico -->
+        </div>
+      </div>
+      
+      <!-- Pestaña de Atenciones sin Ticket -->
+      <div id="noTicketTab" class="tab-content hidden">
+        <details class="user-guide" style="margin-bottom: 6px;">
+          <summary>Registro Rápido de Atención sin Ticket</summary>
+          <div style="background: #ffffff; border: 1px solid #e0e0e0; padding: 8px; border-radius: 6px; margin-top: 4px;">
+            <div style="display: flex; gap: 4px; margin-bottom: 4px;">
+              <input type="datetime-local" id="noTicketDateTime" style="flex: 1; padding: 4px; font-size: 11px; border: 1px solid #ccc; border-radius: 4px;">
+            </div>
+            <div style="display: flex; gap: 4px; margin-bottom: 4px;">
+              <select id="noTicketTechSelect" style="flex: 1; padding: 4px; font-size: 11px; border: 1px solid #ccc; border-radius: 4px;">
+                <option value="">Seleccionar Técnico...</option>
+              </select>
+              <select id="noTicketAgencySelect" style="flex: 1; padding: 4px; font-size: 11px; border: 1px solid #ccc; border-radius: 4px;">
+                <option value="">Seleccionar Agencia...</option>
+              </select>
+            </div>
+            <textarea id="noTicketDetails" placeholder="Detalles u observaciones del soporte..." style="width: 100%; height: 38px; font-size: 11px; padding: 4px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: vertical; margin-bottom: 4px;"></textarea>
+            <button id="addNoTicketBtn" style="background-color: #075E54; margin-bottom: 0;">Guardar Atención Pendiente</button>
+          </div>
+        </details>
+
+        <div class="action-buttons">
+          <button id="exportNoTicketExcelBtn" style="background-color: #27ae60;">Exportar a Excel (.xlsx)</button>
+          <button id="autoMatchTicketsBtn" style="background-color: #075E54;">Emparejar con Bitácora</button>
+        </div>
+
+        <div class="filter-bar">
+          <div style="display: flex; gap: 4px;">
+            <select id="noTicketMonthFilter" style="flex: 1;">
+              <option value="TODOS">Todos los Meses</option>
+              <option value="2026-09" selected>Septiembre 2026</option>
+              <option value="2026-08">Agosto 2026</option>
+            </select>
+          </div>
+          <div class="search-input-wrapper">
+            <input type="text" id="noTicketSearchInput" placeholder="Buscar por técnico, agencia o ticket...">
+            <button id="clearNoTicketSearch" class="clear-search-btn hidden" title="Limpiar búsqueda">&times;</button>
+          </div>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-title">Total Sin Ticket</div>
+            <div id="kpiNoTicketTotal" class="kpi-value">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Pendientes Ticket</div>
+            <div id="kpiNoTicketPending" class="kpi-value" style="color: #e67e22;">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Tickets Asignados</div>
+            <div id="kpiNoTicketMatched" class="kpi-value" style="color: #27ae60;">0</div>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+          <h3 style="margin: 0; font-size: 11px; color: #075E54;">Bitácora de Atenciones sin Ticket</h3>
+        </div>
+
+        <div id="noTicketListContainer" class="message-area" style="flex: 1; min-height: 180px; padding: 4px;">
+          <!-- Render dinámico de registros -->
         </div>
       </div>
       
@@ -453,6 +596,7 @@
       </div>
     </div>
     
+    <script src="xlsx.full.min.js"></script>
     <script src="analytics.js"></script>
     <script src="popup.js"></script>
   </body>
