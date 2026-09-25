@@ -1,0 +1,1442 @@
+{
+  "summary": {
+    "total_messages_analyzed": 855,
+    "total_valid_assignments": 57,
+    "total_unique_pairs": 45,
+    "total_active_technicians": 20,
+    "total_impacted_agencies": 35,
+    "bottleneck_alerts_count": 1,
+    "critical_alerts_count": 0
+  },
+  "top_technicians": [
+    {
+      "technician": "Lenin Villarreal",
+      "assignments": 6
+    },
+    {
+      "technician": "Luis Cuenca",
+      "assignments": 5
+    },
+    {
+      "technician": "Juan Fernando Cordova",
+      "assignments": 5
+    },
+    {
+      "technician": "Marlene Morocho",
+      "assignments": 5
+    },
+    {
+      "technician": "Angel Villa",
+      "assignments": 4
+    },
+    {
+      "technician": "Luis Garcia",
+      "assignments": 4
+    },
+    {
+      "technician": "Dorian Herrera",
+      "assignments": 4
+    },
+    {
+      "technician": "Jose Padilla",
+      "assignments": 3
+    },
+    {
+      "technician": "Fabian Fajardo",
+      "assignments": 3
+    },
+    {
+      "technician": "Juan Pablo Quichimbo",
+      "assignments": 3
+    },
+    {
+      "technician": "Cristian Artos",
+      "assignments": 3
+    },
+    {
+      "technician": "Marco Vargas",
+      "assignments": 2
+    },
+    {
+      "technician": "Roberto Sevilla",
+      "assignments": 2
+    },
+    {
+      "technician": "Guido Molina",
+      "assignments": 2
+    },
+    {
+      "technician": "Lucia Paladines",
+      "assignments": 1
+    },
+    {
+      "technician": "Jorge Menendez",
+      "assignments": 1
+    },
+    {
+      "technician": "Michael Valencia",
+      "assignments": 1
+    },
+    {
+      "technician": "Fernando Caicedo",
+      "assignments": 1
+    },
+    {
+      "technician": "Jorge Chilan",
+      "assignments": 1
+    },
+    {
+      "technician": "Fernando Rodriguez",
+      "assignments": 1
+    }
+  ],
+  "top_agencies": [
+    {
+      "agency": "CUENCA",
+      "interventions": 7
+    },
+    {
+      "agency": "LATACUNGA",
+      "interventions": 5
+    },
+    {
+      "agency": "MILAGRO",
+      "interventions": 4
+    },
+    {
+      "agency": "ESPE",
+      "interventions": 3
+    },
+    {
+      "agency": "SANTA ISABEL",
+      "interventions": 3
+    },
+    {
+      "agency": "OTAVALO",
+      "interventions": 2
+    },
+    {
+      "agency": "EL GUABO",
+      "interventions": 2
+    },
+    {
+      "agency": "TULCAN",
+      "interventions": 2
+    },
+    {
+      "agency": "EL CARMEN",
+      "interventions": 2
+    },
+    {
+      "agency": "BAHÍA MACHALA",
+      "interventions": 2
+    },
+    {
+      "agency": "SHUSHUFINDI",
+      "interventions": 1
+    },
+    {
+      "agency": "RIOBAMBA",
+      "interventions": 1
+    },
+    {
+      "agency": "PORTOVIEJO",
+      "interventions": 1
+    },
+    {
+      "agency": "YANTZAZA",
+      "interventions": 1
+    },
+    {
+      "agency": "VALENCIA",
+      "interventions": 1
+    },
+    {
+      "agency": "CARAPUNGO",
+      "interventions": 1
+    },
+    {
+      "agency": "BABAHOYO",
+      "interventions": 1
+    },
+    {
+      "agency": "CENTRUM EL BOSQUE",
+      "interventions": 1
+    },
+    {
+      "agency": "AMERICA",
+      "interventions": 1
+    },
+    {
+      "agency": "MACHALA",
+      "interventions": 1
+    },
+    {
+      "agency": "GUAYLLABAMBA",
+      "interventions": 1
+    },
+    {
+      "agency": "LA PLAZA",
+      "interventions": 1
+    },
+    {
+      "agency": "CUMANDA",
+      "interventions": 1
+    },
+    {
+      "agency": "GALÁPAGOS",
+      "interventions": 1
+    },
+    {
+      "agency": "SALINAS",
+      "interventions": 1
+    },
+    {
+      "agency": "IBARRA",
+      "interventions": 1
+    },
+    {
+      "agency": "DAULE",
+      "interventions": 1
+    },
+    {
+      "agency": "AMBATO",
+      "interventions": 1
+    },
+    {
+      "agency": "CAYAMBE",
+      "interventions": 1
+    },
+    {
+      "agency": "MALL DEL PACIFICO",
+      "interventions": 1
+    },
+    {
+      "agency": "QUEVEDO",
+      "interventions": 1
+    },
+    {
+      "agency": "ATUNTAQUI",
+      "interventions": 1
+    },
+    {
+      "agency": "GUALACEO",
+      "interventions": 1
+    },
+    {
+      "agency": "LIBERTAD",
+      "interventions": 1
+    },
+    {
+      "agency": "TENA",
+      "interventions": 1
+    }
+  ],
+  "recurrence_matrix": [
+    {
+      "technician": "Luis Cuenca",
+      "agency": "CUENCA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION SUR",
+      "provincia": "AZUAY",
+      "count": 4,
+      "alert_level": "Alerta Operativa"
+    },
+    {
+      "technician": "Fabian Fajardo",
+      "agency": "SANTA ISABEL",
+      "empresa": "Banco Pichincha",
+      "region": "REGION SUR",
+      "provincia": "AZUAY",
+      "count": 2,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Angel Villa",
+      "agency": "LATACUNGA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION CENTRO",
+      "provincia": "COTOPAXI",
+      "count": 2,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Jose Padilla",
+      "agency": "MILAGRO",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "GUAYAS",
+      "count": 2,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Lenin Villarreal",
+      "agency": "OTAVALO",
+      "empresa": "Banco Pichincha",
+      "region": "REGION NORTE",
+      "provincia": "IMBABURA",
+      "count": 2,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Marlene Morocho",
+      "agency": "EL GUABO",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "EL ORO",
+      "count": 2,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Juan Fernando Cordova",
+      "agency": "CUENCA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION SUR",
+      "provincia": "AZUAY",
+      "count": 2,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Dorian Herrera",
+      "agency": "MILAGRO",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "GUAYAS",
+      "count": 2,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Luis Garcia",
+      "agency": "EL CARMEN",
+      "empresa": "Banco Pichincha",
+      "region": "REGION CENTRO",
+      "provincia": "MANABI",
+      "count": 2,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Marlene Morocho",
+      "agency": "BAHÍA MACHALA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "EL ORO",
+      "count": 2,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Jose Padilla",
+      "agency": "ESPE",
+      "empresa": "Banco General Rumiñahui",
+      "region": "REGION NORTE",
+      "provincia": "PICHINCHA",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Lucia Paladines",
+      "agency": "SHUSHUFINDI",
+      "empresa": "Banco Pichincha",
+      "region": "REGION CENTRO",
+      "provincia": "SUCUMBIOS",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Angel Villa",
+      "agency": "RIOBAMBA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION CENTRO",
+      "provincia": "CHIMBORAZO",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Jorge Menendez",
+      "agency": "PORTOVIEJO",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "MANABI",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Luis Cuenca",
+      "agency": "YANTZAZA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION SUR",
+      "provincia": "ZAMORA CHINCHIPE",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Juan Fernando Cordova",
+      "agency": "ESPE",
+      "empresa": "Banco General Rumiñahui",
+      "region": "REGION NORTE",
+      "provincia": "PICHINCHA",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Juan Fernando Cordova",
+      "agency": "SANTA ISABEL",
+      "empresa": "Banco Pichincha",
+      "region": "REGION SUR",
+      "provincia": "AZUAY",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Michael Valencia",
+      "agency": "VALENCIA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "LOS RIOS",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Juan Pablo Quichimbo",
+      "agency": "CARAPUNGO",
+      "empresa": "Banco Pichincha",
+      "region": "REGION NORTE",
+      "provincia": "PICHINCHA",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Luis Garcia",
+      "agency": "BABAHOYO",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "LOS RIOS",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Marco Vargas",
+      "agency": "CENTRUM EL BOSQUE",
+      "empresa": "Banco Pichincha",
+      "region": "REGION NORTE",
+      "provincia": "PICHINCHA",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Roberto Sevilla",
+      "agency": "LATACUNGA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION CENTRO",
+      "provincia": "COTOPAXI",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Marco Vargas",
+      "agency": "AMERICA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION NORTE",
+      "provincia": "PICHINCHA",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Marlene Morocho",
+      "agency": "MACHALA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "EL ORO",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Fernando Caicedo",
+      "agency": "GUAYLLABAMBA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION NORTE",
+      "provincia": "PICHINCHA",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Cristian Artos",
+      "agency": "LA PLAZA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION NORTE",
+      "provincia": "IMBABURA",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Juan Pablo Quichimbo",
+      "agency": "LATACUNGA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION CENTRO",
+      "provincia": "COTOPAXI",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Roberto Sevilla",
+      "agency": "CUMANDA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION CENTRO",
+      "provincia": "TUNGURAHUA",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Jorge Chilan",
+      "agency": "GALÁPAGOS",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "GALÁPAGOS",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Lenin Villarreal",
+      "agency": "LATACUNGA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION CENTRO",
+      "provincia": "COTOPAXI",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Guido Molina",
+      "agency": "SALINAS",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "SANTA ELENA",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Cristian Artos",
+      "agency": "IBARRA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION NORTE",
+      "provincia": "IMBABURA",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Dorian Herrera",
+      "agency": "DAULE",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "GUAYAS",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Angel Villa",
+      "agency": "AMBATO",
+      "empresa": "Banco Pichincha",
+      "region": "REGION CENTRO",
+      "provincia": "TUNGURAHUA",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Juan Pablo Quichimbo",
+      "agency": "ESPE",
+      "empresa": "Banco General Rumiñahui",
+      "region": "REGION NORTE",
+      "provincia": "PICHINCHA",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Lenin Villarreal",
+      "agency": "CAYAMBE",
+      "empresa": "Banco Pichincha",
+      "region": "REGION NORTE",
+      "provincia": "PICHINCHA",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Fernando Rodriguez",
+      "agency": "MALL DEL PACIFICO",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "MANABI",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Cristian Artos",
+      "agency": "TULCAN",
+      "empresa": "Banco Pichincha",
+      "region": "REGION NORTE",
+      "provincia": "CARCHI",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Luis Garcia",
+      "agency": "QUEVEDO",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "LOS RIOS",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Lenin Villarreal",
+      "agency": "ATUNTAQUI",
+      "empresa": "Banco Pichincha",
+      "region": "REGION NORTE",
+      "provincia": "IMBABURA",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Juan Fernando Cordova",
+      "agency": "GUALACEO",
+      "empresa": "Banco Pichincha",
+      "region": "REGION SUR",
+      "provincia": "AZUAY",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Dorian Herrera",
+      "agency": "LIBERTAD",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "SANTA ELENA",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Lenin Villarreal",
+      "agency": "TULCAN",
+      "empresa": "Banco Pichincha",
+      "region": "REGION NORTE",
+      "provincia": "CARCHI",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Guido Molina",
+      "agency": "TENA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION CENTRO",
+      "provincia": "NAPO",
+      "count": 1,
+      "alert_level": "Normal"
+    },
+    {
+      "technician": "Fabian Fajardo",
+      "agency": "CUENCA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION SUR",
+      "provincia": "AZUAY",
+      "count": 1,
+      "alert_level": "Normal"
+    }
+  ],
+  "recent_assignments": [
+    {
+      "id": "EXCEL-42",
+      "date": "",
+      "time": "17:19:28",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Jose Padilla",
+      "agency": "ESPE",
+      "empresa": "Banco General Rumiñahui",
+      "region": "REGION NORTE",
+      "provincia": "PICHINCHA",
+      "ticket": "S/N",
+      "message_snippet": "Dianita se confirma asistencia de Jose Padilla, por favor su ayuda para la atención a las 10:00 que es la disponibilidad..."
+    },
+    {
+      "id": "EXCEL-171",
+      "date": "",
+      "time": "12:16:22",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Lucia Paladines",
+      "agency": "SHUSHUFINDI",
+      "empresa": "Banco Pichincha",
+      "region": "REGION CENTRO",
+      "provincia": "SUCUMBIOS",
+      "ticket": "S/N",
+      "message_snippet": "Se confirma asistencia de:\\n\\n*Lucía Paladines*\\n14:35 hora aproximada.\\nPor movilización hacia Ag Shushufindi"
+    },
+    {
+      "id": "EXCEL-178",
+      "date": "",
+      "time": "13:54:49",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Angel Villa",
+      "agency": "RIOBAMBA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION CENTRO",
+      "provincia": "CHIMBORAZO",
+      "ticket": "AKR-RQ-4259",
+      "message_snippet": "AKR-RQ-4259 - Se confirma asistencia de Angel Villa - Ag. Riobamba."
+    },
+    {
+      "id": "EXCEL-180",
+      "date": "",
+      "time": "14:08:36",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Jorge Menendez",
+      "agency": "PORTOVIEJO",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "MANABI",
+      "ticket": "AKR-RQ-4260",
+      "message_snippet": "AKR-RQ-4260 - Se confirma asistencia de Jorge Menendez - Ag. Portoviejo"
+    },
+    {
+      "id": "EXCEL-201",
+      "date": "",
+      "time": "16:00:55",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Fabian Fajardo",
+      "agency": "SANTA ISABEL",
+      "empresa": "Banco Pichincha",
+      "region": "REGION SUR",
+      "provincia": "AZUAY",
+      "ticket": "AKR-RQ-4264",
+      "message_snippet": "AKR-RQ-4264\\nSe confirma asistencia de: *Fabian Fajardo 25/06/2026 a partir de las 09:30 am ATM Santa Isabel*"
+    },
+    {
+      "id": "EXCEL-258",
+      "date": "",
+      "time": "21:38:53",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Luis Cuenca",
+      "agency": "YANTZAZA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION SUR",
+      "provincia": "ZAMORA CHINCHIPE",
+      "ticket": "S/N",
+      "message_snippet": "Estimada Diana\\nSe confirma asistencia de *Luis Cuenca - 26/06/2026 a las 09:30 am - Ag. Yantzaza*."
+    },
+    {
+      "id": "EXCEL-263",
+      "date": "",
+      "time": "09:24:40",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Juan Fernando Cordova",
+      "agency": "ESPE",
+      "empresa": "Banco General Rumiñahui",
+      "region": "REGION NORTE",
+      "provincia": "PICHINCHA",
+      "ticket": "S/N",
+      "message_snippet": "Estimada Diana, el recurso Juan Fernando Córdova puede estar a las 10:30 a la espera de sus comentarios"
+    },
+    {
+      "id": "EXCEL-282",
+      "date": "",
+      "time": "13:25:52",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Juan Fernando Cordova",
+      "agency": "SANTA ISABEL",
+      "empresa": "Banco Pichincha",
+      "region": "REGION SUR",
+      "provincia": "AZUAY",
+      "ticket": "S/N",
+      "message_snippet": "Quedamos al pendiente de los casos:\\nCentro de Acopio - Juan Fernando Cordova\\nATM Santa Isabel - Fabián Fajardo.\\n\\nGra..."
+    },
+    {
+      "id": "EXCEL-339",
+      "date": "",
+      "time": "18:25:25",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Michael Valencia",
+      "agency": "VALENCIA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "LOS RIOS",
+      "ticket": "S/N",
+      "message_snippet": "Se confirma asiatencia: *Michael Valencia, a las 09:00*"
+    },
+    {
+      "id": "EXCEL-356",
+      "date": "",
+      "time": "21:16:58",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Juan Pablo Quichimbo",
+      "agency": "CARAPUNGO",
+      "empresa": "Banco Pichincha",
+      "region": "REGION NORTE",
+      "provincia": "PICHINCHA",
+      "ticket": "S/N",
+      "message_snippet": "Se confirma asistencia: *Juan Pablo Quichimbo, 03/07/2026 10h00*\\n\\nQuedamos pendientes del ticket para formalidad en Ag..."
+    },
+    {
+      "id": "EXCEL-382",
+      "date": "",
+      "time": "12:05:55",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Luis Garcia",
+      "agency": "BABAHOYO",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "LOS RIOS",
+      "ticket": "S/N",
+      "message_snippet": "Se confirma asistencia: *Luis García, 08/07/2026 10 am - Ag. Babahoyo*"
+    },
+    {
+      "id": "EXCEL-390",
+      "date": "",
+      "time": "13:39:02",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Marco Vargas",
+      "agency": "CENTRUM EL BOSQUE",
+      "empresa": "Banco Pichincha",
+      "region": "REGION NORTE",
+      "provincia": "PICHINCHA",
+      "ticket": "S/N",
+      "message_snippet": "Se confirma asistencia: *Marco Vargas, 07/07/2026 15pm - Bóveda Ag. Centrum El Bosque*"
+    },
+    {
+      "id": "EXCEL-391",
+      "date": "",
+      "time": "14:24:35",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Roberto Sevilla",
+      "agency": "LATACUNGA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION CENTRO",
+      "provincia": "COTOPAXI",
+      "ticket": "S/N",
+      "message_snippet": "Se confirma asistencia: *Roberto Sevilla, 07/07/2026 15:30pm - BGR Latacunga*"
+    },
+    {
+      "id": "EXCEL-414",
+      "date": "",
+      "time": "21:24:23",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Marco Vargas",
+      "agency": "AMERICA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION NORTE",
+      "provincia": "PICHINCHA",
+      "ticket": "S/N",
+      "message_snippet": "Se confirma asistencia: *Marco Vargas, 08/07/2026 09am - Ag. Panamericana*\\nQuedamos al pendiente del ticket para formal..."
+    },
+    {
+      "id": "EXCEL-426",
+      "date": "",
+      "time": "14:41:23",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Marlene Morocho",
+      "agency": "MACHALA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "EL ORO",
+      "ticket": "S/N",
+      "message_snippet": "Se confirma asistencia: *Marlene Morocho 10/07/2026, 11H00 - Ag. Machala*"
+    },
+    {
+      "id": "EXCEL-436",
+      "date": "",
+      "time": "09:19:55",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Fernando Caicedo",
+      "agency": "GUAYLLABAMBA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION NORTE",
+      "provincia": "PICHINCHA",
+      "ticket": "S/N",
+      "message_snippet": "Se confirma asistencia de: *Fernando Caicedo 14/07/2026 11:00 am Ag. Guayllabamba*"
+    },
+    {
+      "id": "EXCEL-441",
+      "date": "",
+      "time": "12:22:57",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Cristian Artos",
+      "agency": "LA PLAZA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION NORTE",
+      "provincia": "IMBABURA",
+      "ticket": "S/N",
+      "message_snippet": "Se confirma asistencia de: *Cristian Artos 14/07/2026 15:00pm Ag. La Plaza Ibarra*"
+    },
+    {
+      "id": "EXCEL-450",
+      "date": "",
+      "time": "12:30:25",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Juan Pablo Quichimbo",
+      "agency": "LATACUNGA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION CENTRO",
+      "provincia": "COTOPAXI",
+      "ticket": "AKR-RQ-4481",
+      "message_snippet": "AKR-RQ-4481 - Se confirma asistencia de: *Roberto Sevilla 17/07/2026 11:00am Shell Mera BGR*\\nAKR-RQ-4482 - Se confirma ..."
+    },
+    {
+      "id": "EXCEL-462",
+      "date": "2026-07-17",
+      "time": "10:04:59",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Angel Villa",
+      "agency": "LATACUNGA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION CENTRO",
+      "provincia": "COTOPAXI",
+      "ticket": "AKR-RQ-4482",
+      "message_snippet": "Estimada Diana, en línea de lo conversado para el AKR-RQ-4482 - se modifica el recurso que asistirá: *Angel Villa 17/07/..."
+    },
+    {
+      "id": "EXCEL-527",
+      "date": "",
+      "time": "17:20:51",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Jose Padilla",
+      "agency": "MILAGRO",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "GUAYAS",
+      "ticket": "S/N",
+      "message_snippet": "Se confirma asistencia: *Jose Padilla; 20/07/2026 09:0 am, Ag. Milagro*"
+    },
+    {
+      "id": "EXCEL-550",
+      "date": "",
+      "time": "15:23:14",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Roberto Sevilla",
+      "agency": "CUMANDA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION CENTRO",
+      "provincia": "TUNGURAHUA",
+      "ticket": "S/N",
+      "message_snippet": "Nos mantenemos pendientes del ticket de Roberto Sevilla - Cumanda."
+    },
+    {
+      "id": "EXCEL-551",
+      "date": "",
+      "time": "16:13:24",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Jorge Chilan",
+      "agency": "GALÁPAGOS",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "GALÁPAGOS",
+      "ticket": "S/N",
+      "message_snippet": "Estimada Diana, excelente tarde\\nConfirmamos asistencia de *Jorge Chilan*; por favor su ayuda, debido a que la movilizac..."
+    },
+    {
+      "id": "EXCEL-561",
+      "date": "",
+      "time": "10:28:16",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Fabian Fajardo",
+      "agency": "SANTA ISABEL",
+      "empresa": "Banco Pichincha",
+      "region": "REGION SUR",
+      "provincia": "AZUAY",
+      "ticket": "S/N",
+      "message_snippet": "Se confirma asistencia: *Fabian Fajardo, 21/07/2026 Ag. Santa Isabel*"
+    },
+    {
+      "id": "EXCEL-562",
+      "date": "",
+      "time": "10:42:32",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Lenin Villarreal",
+      "agency": "LATACUNGA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION CENTRO",
+      "provincia": "COTOPAXI",
+      "ticket": "AKR-RQ-4504",
+      "message_snippet": "AKR-RQ-4504 - BGR AG Ibarra; asiste: *Lenin Villarreal, Cristian Artos*\\nAKR-RQ-4503 - BGR Agencia Latacunga: *Angel Vil..."
+    },
+    {
+      "id": "EXCEL-563",
+      "date": "",
+      "time": "11:09:48",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Guido Molina",
+      "agency": "SALINAS",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "SANTA ELENA",
+      "ticket": "AKR-RQ-4505",
+      "message_snippet": "AKR-RQ-4505 - Ag. Puyo - *Guido Molina*\\nPara Ag. Salinas, estamos verificando disponibilidad, esperamos confirmar en un..."
+    },
+    {
+      "id": "EXCEL-588",
+      "date": "",
+      "time": "16:01:59",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Luis Cuenca",
+      "agency": "CUENCA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION SUR",
+      "provincia": "AZUAY",
+      "ticket": "S/N",
+      "message_snippet": "Se confirma asistencia: *Luis Cuenca 22/07/2026 14:00, Ag. Zamora BGR*"
+    },
+    {
+      "id": "EXCEL-589",
+      "date": "",
+      "time": "16:23:00",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Lenin Villarreal",
+      "agency": "OTAVALO",
+      "empresa": "Banco Pichincha",
+      "region": "REGION NORTE",
+      "provincia": "IMBABURA",
+      "ticket": "S/N",
+      "message_snippet": "Se confirma asistencia: *Lenin Villarreal 22/07/2026 09h00 Ag. Otavalo*"
+    },
+    {
+      "id": "EXCEL-591",
+      "date": "",
+      "time": "16:30:24",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Cristian Artos",
+      "agency": "IBARRA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION NORTE",
+      "provincia": "IMBABURA",
+      "ticket": "S/N",
+      "message_snippet": "Se confirma asistencia: *Cristian Artos 23/07/2026  11:00  Diners Ibarra*"
+    },
+    {
+      "id": "EXCEL-592",
+      "date": "",
+      "time": "16:32:37",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Angel Villa",
+      "agency": "LATACUNGA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION CENTRO",
+      "provincia": "COTOPAXI",
+      "ticket": "S/N",
+      "message_snippet": "Se confirma asistencia: *Angel Villa 22/07/2026 11:00  ATM FAE Latacunga*"
+    },
+    {
+      "id": "EXCEL-595",
+      "date": "",
+      "time": "12:34:28",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Marlene Morocho",
+      "agency": "EL GUABO",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "EL ORO",
+      "ticket": "S/N",
+      "message_snippet": "Se confirma asistencia de: *Marlene Morocho 23/07/2026 10:00 Ag. El Guabo*"
+    },
+    {
+      "id": "EXCEL-603",
+      "date": "",
+      "time": "15:41:41",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Dorian Herrera",
+      "agency": "DAULE",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "GUAYAS",
+      "ticket": "S/N",
+      "message_snippet": "Se confirma asistencia: *Dorian Herrera: 23/07/2026 09:00 Ag. Vía Daule*"
+    },
+    {
+      "id": "EXCEL-606",
+      "date": "",
+      "time": "16:45:12",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Angel Villa",
+      "agency": "AMBATO",
+      "empresa": "Banco Pichincha",
+      "region": "REGION CENTRO",
+      "provincia": "TUNGURAHUA",
+      "ticket": "AKR-RQ-4528",
+      "message_snippet": "AKR-RQ-4528\\nSe confirma asistencia: *Angel Villa: 23/07/2026 24/07/2026 11:00 ATM ESFORSE - Ambato*"
+    },
+    {
+      "id": "EXCEL-611",
+      "date": "",
+      "time": "17:18:36",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Juan Pablo Quichimbo",
+      "agency": "ESPE",
+      "empresa": "Banco General Rumiñahui",
+      "region": "REGION NORTE",
+      "provincia": "PICHINCHA",
+      "ticket": "S/N",
+      "message_snippet": "Se confirma asistencia: *Juan Pablo Quichimbo: 23/07/2026 11:00 ATM ESPE - Quito - Valle de los Chillos*"
+    },
+    {
+      "id": "EXCEL-616",
+      "date": "",
+      "time": "17:51:29",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Juan Fernando Cordova",
+      "agency": "CUENCA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION SUR",
+      "provincia": "AZUAY",
+      "ticket": "AKR-RQ-4533",
+      "message_snippet": "AKR-RQ-4533\\nSe confirma asistencia: *Juan Fernando Córdova 28/07/2026 20:30 PM ATM Monay Cuenca*"
+    },
+    {
+      "id": "EXCEL-655",
+      "date": "",
+      "time": "15:27:50",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Dorian Herrera",
+      "agency": "MILAGRO",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "GUAYAS",
+      "ticket": "S/N",
+      "message_snippet": "Se confirma asistencia de: *Dorian Herrera ATM TERMINAL TERRESTE MILAGRO 08:00 am*"
+    },
+    {
+      "id": "EXCEL-659",
+      "date": "",
+      "time": "10:06:20",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Lenin Villarreal",
+      "agency": "CAYAMBE",
+      "empresa": "Banco Pichincha",
+      "region": "REGION NORTE",
+      "provincia": "PICHINCHA",
+      "ticket": "S/N",
+      "message_snippet": "Se confirma asistencia: *Lenin Villarreal 31/07/2026 12:15 pm Ag. Cayambe*"
+    },
+    {
+      "id": "EXCEL-662",
+      "date": "2026-08-03",
+      "time": "08:41:14",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Dorian Herrera",
+      "agency": "MILAGRO",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "GUAYAS",
+      "ticket": "S/N",
+      "message_snippet": "Se confirma asistencia: *Dorian Herrera 03/08/2026 09am Milagro Terminal Terrestre*"
+    },
+    {
+      "id": "EXCEL-672",
+      "date": "",
+      "time": "15:31:52",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Luis Cuenca",
+      "agency": "CUENCA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION SUR",
+      "provincia": "AZUAY",
+      "ticket": "S/N",
+      "message_snippet": "Gracias Estimado Ricy, se ratifica asistencia: *Luis Cuenca Ag Cacpe Zamora Palanda 04/08/2026 10:00 AM*"
+    },
+    {
+      "id": "EXCEL-676",
+      "date": "",
+      "time": "10:45:45",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Lenin Villarreal",
+      "agency": "OTAVALO",
+      "empresa": "Banco Pichincha",
+      "region": "REGION NORTE",
+      "provincia": "IMBABURA",
+      "ticket": "S/N",
+      "message_snippet": "Se notifica asistencia: *Lenin Villarreal 04/08/2026 12h00 PM Ag.Otavalo*"
+    },
+    {
+      "id": "EXCEL-680",
+      "date": "",
+      "time": "12:10:07",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Jose Padilla",
+      "agency": "MILAGRO",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "GUAYAS",
+      "ticket": "S/N",
+      "message_snippet": "Se notifica asistencia: *Jose Padilla 05/08/2026 13h00 PM Milagro*"
+    },
+    {
+      "id": "EXCEL-688",
+      "date": "",
+      "time": "11:09:41",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Fernando Rodriguez",
+      "agency": "MALL DEL PACIFICO",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "MANABI",
+      "ticket": "S/N",
+      "message_snippet": "Se confirma asistencia de: *Fernando Rodriguez Mall del Pacífico 6/8/2026 11:30*"
+    },
+    {
+      "id": "EXCEL-701",
+      "date": "",
+      "time": "10:32:29",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Cristian Artos",
+      "agency": "TULCAN",
+      "empresa": "Banco Pichincha",
+      "region": "REGION NORTE",
+      "provincia": "CARCHI",
+      "ticket": "S/N",
+      "message_snippet": "Gracias la comprensión, asiste: *Cristian Artos Ag. Tulcan 13:30*"
+    },
+    {
+      "id": "EXCEL-705",
+      "date": "",
+      "time": "17:07:51",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Luis Garcia",
+      "agency": "QUEVEDO",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "LOS RIOS",
+      "ticket": "S/N",
+      "message_snippet": "Se confirma asistencia: *Luis García Ag. Quevedo 15:30pm*"
+    },
+    {
+      "id": "EXCEL-711",
+      "date": "",
+      "time": "16:29:42",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Luis Garcia",
+      "agency": "EL CARMEN",
+      "empresa": "Banco Pichincha",
+      "region": "REGION CENTRO",
+      "provincia": "MANABI",
+      "ticket": "S/N",
+      "message_snippet": "Estimada Diana buena tarde, se envía a nuestra MDS, y en línea de lo conversado\\nSe confirma asistencia: *Luis García El..."
+    },
+    {
+      "id": "EXCEL-718",
+      "date": "",
+      "time": "16:12:09",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Luis Cuenca",
+      "agency": "CUENCA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION SUR",
+      "provincia": "AZUAY",
+      "ticket": "S/N",
+      "message_snippet": "Se envía detalle, asiste: *Luis Cuenca Sábado 22/08 Ag Cacpe Planda 09:00*"
+    },
+    {
+      "id": "EXCEL-719",
+      "date": "",
+      "time": "16:32:23",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Luis Garcia",
+      "agency": "EL CARMEN",
+      "empresa": "Banco Pichincha",
+      "region": "REGION CENTRO",
+      "provincia": "MANABI",
+      "ticket": "S/N",
+      "message_snippet": "Se notifica asistencia: *Luis García 21/08 09:00 am ATM El Carmen*"
+    },
+    {
+      "id": "EXCEL-731",
+      "date": "",
+      "time": "13:03:55",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Lenin Villarreal",
+      "agency": "ATUNTAQUI",
+      "empresa": "Banco Pichincha",
+      "region": "REGION NORTE",
+      "provincia": "IMBABURA",
+      "ticket": "S/N",
+      "message_snippet": "Se confirma asistencia de *Lenin Villarreal, Ag. Atuntaqui 24/08/2026*"
+    },
+    {
+      "id": "EXCEL-737",
+      "date": "",
+      "time": "16:44:43",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Juan Fernando Cordova",
+      "agency": "GUALACEO",
+      "empresa": "Banco Pichincha",
+      "region": "REGION SUR",
+      "provincia": "AZUAY",
+      "ticket": "S/N",
+      "message_snippet": "Se notifica asistencia: *Juan Fernando Córdova, Ag. Gualaceo 26/08/2026 09:30*"
+    },
+    {
+      "id": "EXCEL-750",
+      "date": "",
+      "time": "13:21:27",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Dorian Herrera",
+      "agency": "LIBERTAD",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "SANTA ELENA",
+      "ticket": "S/N",
+      "message_snippet": "Se confirma asistencia: *Dorian Herrera, 27/08/2026 Microfinanzas La Libertad 09:00 am*"
+    },
+    {
+      "id": "EXCEL-766",
+      "date": "",
+      "time": "14:29:08",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Luis Cuenca",
+      "agency": "CUENCA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION SUR",
+      "provincia": "AZUAY",
+      "ticket": "S/N",
+      "message_snippet": "Estimados \\nSe confirma asistencia de Luis Cuenca."
+    },
+    {
+      "id": "EXCEL-774",
+      "date": "",
+      "time": "16:17:08",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Marlene Morocho",
+      "agency": "BAHÍA MACHALA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "EL ORO",
+      "ticket": "S/N",
+      "message_snippet": "Se confirma asistencia de *Marlene Morocho;  08/09/2026 9:00am Ag. Bahía Machala*"
+    },
+    {
+      "id": "EXCEL-780",
+      "date": "",
+      "time": "17:25:24",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Marlene Morocho",
+      "agency": "BAHÍA MACHALA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "EL ORO",
+      "ticket": "S/N",
+      "message_snippet": "Se confirma asistencia de *Marlene Morocho;  10/09/2026 10:00am Ag. Bahía Machala*"
+    },
+    {
+      "id": "EXCEL-783",
+      "date": "",
+      "time": "17:31:06",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Lenin Villarreal",
+      "agency": "TULCAN",
+      "empresa": "Banco Pichincha",
+      "region": "REGION NORTE",
+      "provincia": "CARCHI",
+      "ticket": "S/N",
+      "message_snippet": "Se confirma asistencia de *Lenin Villarreal;  10/09/2026 09:00am Ag. Tulcán*"
+    },
+    {
+      "id": "EXCEL-799",
+      "date": "",
+      "time": "11:55:44",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Guido Molina",
+      "agency": "TENA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION CENTRO",
+      "provincia": "NAPO",
+      "ticket": "S/N",
+      "message_snippet": "Se confirma asistencia *Guido Molina: Ag. Tena 14/09/2026 07:00:00*"
+    },
+    {
+      "id": "EXCEL-827",
+      "date": "",
+      "time": "15:24:16",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Fabian Fajardo",
+      "agency": "CUENCA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION SUR",
+      "provincia": "AZUAY",
+      "ticket": "AKR-RQ-4856",
+      "message_snippet": "Se confirma asistencia de *Fabián Fajardo, Suc. Cuenca*\\nAKR-RQ-4856 --- 22-09-2026 a partir de las 11h00\\nAKR-RQ-4855 -..."
+    },
+    {
+      "id": "EXCEL-829",
+      "date": "",
+      "time": "16:29:29",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Juan Fernando Cordova",
+      "agency": "CUENCA",
+      "empresa": "Banco Pichincha",
+      "region": "REGION SUR",
+      "provincia": "AZUAY",
+      "ticket": "AKR-RQ-4856",
+      "message_snippet": "Estimada Diana, por un tema interno actualizo la información\\nSe confirma asistencia\\nAKR-RQ-4856 --- 22-09-2026 a parti..."
+    },
+    {
+      "id": "EXCEL-841",
+      "date": "",
+      "time": "15:03:31",
+      "sender": "Akros 593993007577",
+      "is_akros_confirmation": true,
+      "technician": "Marlene Morocho",
+      "agency": "EL GUABO",
+      "empresa": "Banco Pichincha",
+      "region": "REGION COSTA",
+      "provincia": "EL ORO",
+      "ticket": "S/N",
+      "message_snippet": "Se confirma asistencia: *Marlene Morocho 23/09/2026 10:30 Ag. El Guabo*"
+    }
+  ]
+}
