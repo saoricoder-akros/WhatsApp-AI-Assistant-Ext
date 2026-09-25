@@ -26,17 +26,20 @@ document.addEventListener('DOMContentLoaded', function () {
   const settingsTab = document.getElementById('settingsTab');
   const automationTab = document.getElementById('automationTab');
   const analyticsTab = document.getElementById('analyticsTab');
+  const noTicketTab = document.getElementById('noTicketTab');
 
   const runAnalyticsBtn = document.getElementById('runAnalyticsBtn');
   const resetTimestampBtn = document.getElementById('resetTimestampBtn');
   const loadMockAnalyticsBtn = document.getElementById('loadMockAnalyticsBtn');
   const analyticsRegionFilter = document.getElementById('analyticsRegionFilter');
+  const analyticsProviderFilter = document.getElementById('analyticsProviderFilter');
   const analyticsSearchInput = document.getElementById('analyticsSearchInput');
-  const analyticsViewSelect = document.getElementById('analyticsViewSelect');
+  const clearAnalyticsSearchBtn = document.getElementById('clearAnalyticsSearchBtn');
+  const btnViewConsolidated = document.getElementById('btnViewConsolidated');
+  const btnViewAgencyVsChat = document.getElementById('btnViewAgencyVsChat');
   const lastTimestampInfo = document.getElementById('lastTimestampInfo');
   const kpiTotalCount = document.getElementById('kpiTotalCount');
   const kpiAgenciesCount = document.getElementById('kpiAgenciesCount');
-  const kpiBottlenecksCount = document.getElementById('kpiBottlenecksCount');
   const kpiTopTech = document.getElementById('kpiTopTech');
   const analyticsReportContainer = document.getElementById('analyticsReportContainer');
 
@@ -227,6 +230,7 @@ document.addEventListener('DOMContentLoaded', function () {
     updateButtonStates();
     updateAutomationBadge();
     renderTicketLogs();
+    renderAnalyticsReport([]);
   });
 
   // --- Listeners de Eventos de la Interfaz ---
@@ -314,6 +318,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (actionsTab) actionsTab.classList.add('hidden');
       if (automationTab) automationTab.classList.add('hidden');
       if (analyticsTab) analyticsTab.classList.add('hidden');
+      if (noTicketTab) noTicketTab.classList.add('hidden');
       if (settingsTab) settingsTab.classList.add('hidden');
 
       if (tabName === 'actions' && actionsTab) {
@@ -323,6 +328,11 @@ document.addEventListener('DOMContentLoaded', function () {
         renderTicketLogs();
       } else if (tabName === 'analytics' && analyticsTab) {
         analyticsTab.classList.remove('hidden');
+        renderAnalyticsReport(currentRawMessages);
+      } else if (tabName === 'noTicket' && noTicketTab) {
+        noTicketTab.classList.remove('hidden');
+        populateNoTicketDropdowns();
+        renderNoTicketTab();
       } else if (tabName === 'settings' && settingsTab) {
         settingsTab.classList.remove('hidden');
       }
@@ -332,6 +342,27 @@ document.addEventListener('DOMContentLoaded', function () {
   // --- Módulo de Visor Analítico Interno ---
   let currentRawMessages = [];
   let storedLastProcessedTimestamp = null;
+  let currentActiveView = 'consolidated';
+
+  // Poblar desplegable de proveedores dinámicamente desde el catálogo de la extensión
+  function populateProviderDropdown() {
+    if (!analyticsProviderFilter || !window.WhatsAppAnalyticsEngine) return;
+    const engine = new window.WhatsAppAnalyticsEngine();
+    const providers = engine.getUniqueProviders();
+    const currentVal = analyticsProviderFilter.value || 'TODOS';
+    let html = '<option value="TODOS">Todos los Proveedores</option>';
+    providers.forEach(p => {
+      html += `<option value="${p}">${p}</option>`;
+    });
+    analyticsProviderFilter.innerHTML = html;
+    if (providers.includes(currentVal)) {
+      analyticsProviderFilter.value = currentVal;
+    } else {
+      analyticsProviderFilter.value = 'TODOS';
+    }
+  }
+
+  populateProviderDropdown();
 
   // Cargar timestamp guardado previamente
   chrome.storage.local.get(['lastProcessedTimestamp'], (res) => {
@@ -368,30 +399,39 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     const selectedRegion = analyticsRegionFilter ? analyticsRegionFilter.value : 'TODAS';
+    const selectedProvider = analyticsProviderFilter ? analyticsProviderFilter.value : 'TODOS';
     const searchTerm = analyticsSearchInput ? analyticsSearchInput.value.toLowerCase().trim() : '';
-    const viewType = analyticsViewSelect ? analyticsViewSelect.value : 'consolidated';
+    const viewType = currentActiveView;
 
-    // Filtrar por término de búsqueda (técnico, agencia o región)
+    toggleClearSearchButton();
+
+    // Filtrar por término de búsqueda (técnico, proveedor, agencia, cantón, provincia, sección, banco o región)
     if (searchTerm) {
       extracted = extracted.filter(item => 
         item.agency.toLowerCase().includes(searchTerm) ||
+        (item.canton || item.cantonName || '').toLowerCase().includes(searchTerm) ||
+        (item.provincia || item.provinciaName || '').toLowerCase().includes(searchTerm) ||
+        (item.seccion || item.seccionName || '').toLowerCase().includes(searchTerm) ||
+        (item.regionNatural || '').toLowerCase().includes(searchTerm) ||
+        (item.empresa || item.banco || item.bankName || '').toLowerCase().includes(searchTerm) ||
+        (item.source || '').toLowerCase().includes(searchTerm) ||
         item.chatMention.toLowerCase().includes(searchTerm) ||
         item.technician.toLowerCase().includes(searchTerm) ||
+        (item.technicianProvider || '').toLowerCase().includes(searchTerm) ||
         item.region.toLowerCase().includes(searchTerm)
       );
     }
 
-    const reportData = engine.generateStrategicReport(extracted, selectedRegion);
+    const reportData = engine.generateStrategicReport(extracted, selectedRegion, selectedProvider);
 
     const metrics = reportData.summaryMetrics;
     if (kpiTotalCount) kpiTotalCount.textContent = metrics.totalExtractedCount;
     if (kpiAgenciesCount) kpiAgenciesCount.textContent = metrics.affectedAgenciesCount;
-    if (kpiBottlenecksCount) kpiBottlenecksCount.textContent = metrics.bottlenecksCount;
     if (kpiTopTech) kpiTopTech.textContent = metrics.topNationalTech !== 'N/A' ? `${metrics.topNationalTech} (${metrics.topNationalSupports})` : 'N/A';
 
     if (!reportData.reportRows || reportData.reportRows.length === 0) {
       if (analyticsReportContainer) {
-        analyticsReportContainer.innerHTML = '<em style="font-size: 11px; color: #666; padding: 8px; display: block;">No hay datos o incidencias nuevas para los filtros aplicados.</em>';
+        analyticsReportContainer.innerHTML = '<em style="font-size: 11px; color: #666; padding: 8px; display: block;">No hay datos o atenciones registradas para los filtros aplicados.</em>';
       }
       return;
     }
@@ -404,22 +444,30 @@ document.addEventListener('DOMContentLoaded', function () {
           <thead>
             <tr>
               <th>Agencia Oficial</th>
-              <th>Mencion en Chat</th>
-              <th>Tecnico Asignado</th>
-              <th>Confirmacion</th>
+              <th>Mención en Chat</th>
+              <th>Técnico Asignado</th>
             </tr>
           </thead>
           <tbody>
       `;
 
       reportData.reportRows.forEach(row => {
+        const bankBadge = row.bankName && row.bankName !== 'N/A' ? `<span class="bank-badge">${row.bankName}</span>` : '';
+        const waBadge = row.hasWhatsApp ? `<span class="source-badge badge-whatsapp">WhatsApp</span>` : '';
+        const arandaBadge = row.hasAranda ? `<span class="source-badge badge-aranda">Aranda</span>` : '';
+        const sourceTags = `${waBadge}${arandaBadge}`;
         const confirmedBadge = row.confirmedByOutgoingCount > 0 ? `<span class="badge-confirmed">Confirmado</span>` : '';
+        const providerText = row.frequentTechProvider || 'No está en lista';
+        const isNotInList = providerText === 'No está en lista';
+        const cloudHtml = `<div class="provider-cloud ${isNotInList ? 'not-in-list' : ''}">${providerText}</div>`;
         html += `
           <tr>
-            <td><strong>${row.agencyName}</strong></td>
+            <td><div><strong>${row.agencyName}</strong>${bankBadge}${sourceTags}</div></td>
             <td>${row.chatMentionName || row.agencyName}</td>
-            <td>${row.frequentTech}</td>
-            <td style="text-align: center;">${confirmedBadge || '-'}</td>
+            <td>
+              ${cloudHtml}
+              <div><strong>${row.frequentTech}</strong>${confirmedBadge}</div>
+            </td>
           </tr>
         `;
       });
@@ -430,24 +478,43 @@ document.addEventListener('DOMContentLoaded', function () {
         <table class="analytics-table">
           <thead>
             <tr>
-              <th>Region / Agencia</th>
-              <th>Tecnico Frecuente</th>
+              <th>Agencia</th>
+              <th>Técnico Frecuente</th>
               <th>Soportes</th>
-              <th>Estado Recurrencia</th>
             </tr>
           </thead>
           <tbody>
       `;
 
       reportData.reportRows.forEach(row => {
-        const regionBadge = row.regionName ? `<span style="font-size:9px; color:#666; display:block;">${row.regionName}</span>` : '';
+        const bankBadge = row.bankName && row.bankName !== 'N/A' ? `<span class="bank-badge">${row.bankName}</span>` : '';
+        const waBadge = row.hasWhatsApp ? `<span class="source-badge badge-whatsapp">WhatsApp</span>` : '';
+        const arandaBadge = row.hasAranda ? `<span class="source-badge badge-aranda">Aranda</span>` : '';
+        const sourceTags = `${waBadge}${arandaBadge}`;
+        
+        const geoParts = [];
+        if (row.cantonName && row.cantonName !== row.agencyName) geoParts.push(`Cantón ${row.cantonName}`);
+        if (row.provinciaName) geoParts.push(`Prov. ${row.provinciaName}`);
+        if (row.regionName && row.regionName !== 'N/A') geoParts.push(row.regionName);
+        if (row.seccionName) geoParts.push(row.seccionName);
+        const geoText = geoParts.length > 0 ? geoParts.join(' • ') : (row.regionName || '');
+        const geoBadge = `<span style="font-size:8.5px; color:#555; display:block; margin-top:2px;">${geoText}</span>`;
+
         const confirmedBadge = row.confirmedByOutgoingCount > 0 ? `<span class="badge-confirmed">Confirmado</span>` : '';
+        const providerText = row.frequentTechProvider || 'No está en lista';
+        const isNotInList = providerText === 'No está en lista';
+        const cloudHtml = `<div class="provider-cloud ${isNotInList ? 'not-in-list' : ''}">${providerText}</div>`;
         html += `
           <tr>
-            <td><strong>${row.agencyName}</strong>${regionBadge}</td>
-            <td>${row.frequentTech}${confirmedBadge}</td>
+            <td>
+              <div><strong>${row.agencyName}</strong>${bankBadge}${sourceTags}</div>
+              ${geoBadge}
+            </td>
+            <td>
+              ${cloudHtml}
+              <div><strong>${row.frequentTech}</strong>${confirmedBadge}</div>
+            </td>
             <td style="text-align: center; font-weight: bold;">${row.totalSupports}</td>
-            <td><span class="status-badge ${row.statusBadgeClass}">${row.bottleneckLevel}</span></td>
           </tr>
         `;
       });
@@ -467,14 +534,53 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  if (analyticsViewSelect) {
-    analyticsViewSelect.addEventListener('change', () => {
+  if (analyticsProviderFilter) {
+    analyticsProviderFilter.addEventListener('change', () => {
       renderAnalyticsReport(currentRawMessages);
     });
   }
 
+  if (btnViewConsolidated) {
+    btnViewConsolidated.addEventListener('click', () => {
+      currentActiveView = 'consolidated';
+      btnViewConsolidated.classList.add('active');
+      if (btnViewAgencyVsChat) btnViewAgencyVsChat.classList.remove('active');
+      renderAnalyticsReport(currentRawMessages);
+    });
+  }
+
+  if (btnViewAgencyVsChat) {
+    btnViewAgencyVsChat.addEventListener('click', () => {
+      currentActiveView = 'agencyVsChat';
+      btnViewAgencyVsChat.classList.add('active');
+      if (btnViewConsolidated) btnViewConsolidated.classList.remove('active');
+      renderAnalyticsReport(currentRawMessages);
+    });
+  }
+
+  function toggleClearSearchButton() {
+    if (!clearAnalyticsSearchBtn || !analyticsSearchInput) return;
+    if (analyticsSearchInput.value.trim().length > 0) {
+      clearAnalyticsSearchBtn.classList.remove('hidden');
+    } else {
+      clearAnalyticsSearchBtn.classList.add('hidden');
+    }
+  }
+
   if (analyticsSearchInput) {
     analyticsSearchInput.addEventListener('input', () => {
+      toggleClearSearchButton();
+      renderAnalyticsReport(currentRawMessages);
+    });
+  }
+
+  if (clearAnalyticsSearchBtn) {
+    clearAnalyticsSearchBtn.addEventListener('click', () => {
+      if (analyticsSearchInput) {
+        analyticsSearchInput.value = '';
+        analyticsSearchInput.focus();
+      }
+      toggleClearSearchButton();
       renderAnalyticsReport(currentRawMessages);
     });
   }
@@ -654,6 +760,348 @@ document.addEventListener('DOMContentLoaded', function () {
         fetchMessagesBtn.disabled = false;
         updateButtonStates();
       }
+    });
+  }
+
+  // --- Módulo de Atenciones sin Ticket (Persistencia, Match Posterior & Exportación Excel) ---
+  const noTicketDateTime = document.getElementById('noTicketDateTime');
+  const noTicketTechSelect = document.getElementById('noTicketTechSelect');
+  const noTicketAgencySelect = document.getElementById('noTicketAgencySelect');
+  const noTicketDetails = document.getElementById('noTicketDetails');
+  const addNoTicketBtn = document.getElementById('addNoTicketBtn');
+  const exportNoTicketExcelBtn = document.getElementById('exportNoTicketExcelBtn');
+  const autoMatchTicketsBtn = document.getElementById('autoMatchTicketsBtn');
+  const noTicketMonthFilter = document.getElementById('noTicketMonthFilter');
+  const noTicketSearchInput = document.getElementById('noTicketSearchInput');
+  const clearNoTicketSearch = document.getElementById('clearNoTicketSearch');
+  const kpiNoTicketTotal = document.getElementById('kpiNoTicketTotal');
+  const kpiNoTicketPending = document.getElementById('kpiNoTicketPending');
+  const kpiNoTicketMatched = document.getElementById('kpiNoTicketMatched');
+  const noTicketListContainer = document.getElementById('noTicketListContainer');
+
+  let noTicketSupports = [];
+
+  // Cargar registros sin ticket guardados previamente
+  chrome.storage.local.get(['noTicketSupports'], (res) => {
+    if (res.noTicketSupports && Array.isArray(res.noTicketSupports)) {
+      noTicketSupports = res.noTicketSupports;
+    }
+  });
+
+  function populateNoTicketDropdowns() {
+    if (!window.WhatsAppAnalyticsEngine) return;
+    const engine = new window.WhatsAppAnalyticsEngine();
+    
+    if (noTicketTechSelect && noTicketTechSelect.options.length <= 1) {
+      let techHtml = '<option value="">Seleccionar Técnico...</option>';
+      engine.techniciansCatalog.forEach(t => {
+        techHtml += `<option value="${t.nombre}">${t.nombre}</option>`;
+      });
+      noTicketTechSelect.innerHTML = techHtml;
+    }
+
+    if (noTicketAgencySelect && noTicketAgencySelect.options.length <= 1) {
+      let agencyHtml = '<option value="">Seleccionar Agencia...</option>';
+      engine.agenciesCatalog.forEach(a => {
+        agencyHtml += `<option value="${a.nombre}">${a.nombre} (${a.banco})</option>`;
+      });
+      noTicketAgencySelect.innerHTML = agencyHtml;
+    }
+  }
+
+  function getMonthNameKey(dateStr) {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return { key: '2026-09', name: 'Septiembre 2026' };
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    const monthsMap = {
+      '01': 'Enero', '02': 'Febrero', '03': 'Marzo', '04': 'Abril',
+      '05': 'Mayo', '06': 'Junio', '07': 'Julio', '08': 'Agosto',
+      '09': 'Septiembre', '10': 'Octubre', '11': 'Noviembre', '12': 'Diciembre'
+    };
+    const key = `${year}-${month}`;
+    const name = `${monthsMap[month] || month} ${year}`;
+    return { key, name };
+  }
+
+  function renderNoTicketTab() {
+    if (!noTicketListContainer) return;
+
+    const selectedMonth = noTicketMonthFilter ? noTicketMonthFilter.value : '2026-09';
+    const searchTerm = noTicketSearchInput ? noTicketSearchInput.value.toLowerCase().trim() : '';
+
+    let filtered = [...noTicketSupports];
+
+    if (selectedMonth !== 'TODOS') {
+      filtered = filtered.filter(item => {
+        const itemKey = item.monthKey || (item.timestamp ? item.timestamp.slice(0, 7) : '');
+        return itemKey === selectedMonth;
+      });
+    }
+
+    if (searchTerm) {
+      filtered = filtered.filter(item =>
+        (item.technicianName || '').toLowerCase().includes(searchTerm) ||
+        (item.agencyName || '').toLowerCase().includes(searchTerm) ||
+        (item.details || '').toLowerCase().includes(searchTerm) ||
+        (item.ticketCode || '').toLowerCase().includes(searchTerm) ||
+        (item.bankName || '').toLowerCase().includes(searchTerm)
+      );
+    }
+
+    // Actualizar KPIs
+    const totalCount = filtered.length;
+    const pendingCount = filtered.filter(i => i.status === 'PENDIENTE').length;
+    const matchedCount = filtered.filter(i => i.status === 'ASIGNADO').length;
+
+    if (kpiNoTicketTotal) kpiNoTicketTotal.textContent = totalCount;
+    if (kpiNoTicketPending) kpiNoTicketPending.textContent = pendingCount;
+    if (kpiNoTicketMatched) kpiNoTicketMatched.textContent = matchedCount;
+
+    if (filtered.length === 0) {
+      noTicketListContainer.innerHTML = '<em style="color:#666; font-size:11px; padding:8px; display:block;">No hay atenciones registradas para el periodo o filtro seleccionado.</em>';
+      return;
+    }
+
+    let html = '<div style="display:flex; flex-direction:column; gap:6px;">';
+    filtered.forEach((item) => {
+      const isPending = item.status === 'PENDIENTE';
+      const statusBadge = isPending
+        ? `<span style="background-color: #e67e22; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: bold;">PENDIENTE TICKET</span>`
+        : `<span style="background-color: #27ae60; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: bold;">TICKET: ${item.ticketCode}</span>`;
+
+      const dateDisplay = item.timestamp ? new Date(item.timestamp).toLocaleString() : 'N/A';
+      const providerText = item.technicianProvider || 'No está en lista';
+      const bankBadge = item.bankName && item.bankName !== 'N/A' ? `<span class="bank-badge">${item.bankName}</span>` : '';
+
+      html += `
+        <div style="background:#ffffff; border:1px solid #cfd8dc; border-radius:6px; padding:6px 8px; font-size:11px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <div>
+              <strong>${item.agencyName}</strong> ${bankBadge}
+            </div>
+            ${statusBadge}
+          </div>
+          <div style="margin-bottom:3px; color:#333;">
+            <strong>Técnico:</strong> ${item.technicianName} <span class="provider-cloud ${providerText === 'No está en lista' ? 'not-in-list' : ''}" style="margin-left:4px;">${providerText}</span>
+          </div>
+          <div style="font-size:10.5px; color:#555; background:#f9fbf9; padding:4px; border-radius:4px; margin-bottom:4px;">
+            ${item.details || 'Sin observaciones'}
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:9.5px; color:#777;">
+            <span>📅 ${dateDisplay}</span>
+            <div style="display:flex; gap:4px;">
+              ${isPending ? `<button class="assign-ticket-btn" data-id="${item.id}" style="background:#075E54; color:white; border:none; padding:2px 6px; font-size:9px; border-radius:3px; cursor:pointer;">Asignar Ticket</button>` : ''}
+              <button class="delete-noticket-btn" data-id="${item.id}" style="background:#c62828; color:white; border:none; padding:2px 6px; font-size:9px; border-radius:3px; cursor:pointer;">Eliminar</button>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+    html += '</div>';
+
+    noTicketListContainer.innerHTML = html;
+
+    // Asignar listeners a botones dinámicos
+    noTicketListContainer.querySelectorAll('.assign-ticket-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const itemId = e.target.getAttribute('data-id');
+        const code = prompt("Ingrese el número o código de ticket asignado:");
+        if (code && code.trim()) {
+          assignTicketToRecord(itemId, code.trim());
+        }
+      });
+    });
+
+    noTicketListContainer.querySelectorAll('.delete-noticket-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const itemId = e.target.getAttribute('data-id');
+        deleteNoTicketRecord(itemId);
+      });
+    });
+  }
+
+  function assignTicketToRecord(itemId, ticketCode) {
+    const idx = noTicketSupports.findIndex(i => i.id === itemId);
+    if (idx !== -1) {
+      noTicketSupports[idx].status = 'ASIGNADO';
+      noTicketSupports[idx].ticketCode = ticketCode;
+      noTicketSupports[idx].matchedAt = new Date().toISOString();
+      chrome.storage.local.set({ noTicketSupports: noTicketSupports }, () => {
+        renderNoTicketTab();
+      });
+    }
+  }
+
+  function deleteNoTicketRecord(itemId) {
+    noTicketSupports = noTicketSupports.filter(i => i.id !== itemId);
+    chrome.storage.local.set({ noTicketSupports: noTicketSupports }, () => {
+      renderNoTicketTab();
+    });
+  }
+
+  if (addNoTicketBtn) {
+    addNoTicketBtn.addEventListener('click', () => {
+      const dtVal = noTicketDateTime ? noTicketDateTime.value : '';
+      const techVal = noTicketTechSelect ? noTicketTechSelect.value : '';
+      const agencyVal = noTicketAgencySelect ? noTicketAgencySelect.value : '';
+      const detailsVal = noTicketDetails ? noTicketDetails.value.trim() : '';
+
+      if (!techVal || !agencyVal) {
+        alert("Por favor seleccione un Técnico y una Agencia.");
+        return;
+      }
+
+      const timestamp = dtVal ? new Date(dtVal).toISOString() : new Date().toISOString();
+      const monthObj = getMonthNameKey(timestamp);
+
+      let bankName = 'N/A';
+      let cantonName = '';
+      let provinciaName = '';
+      let providerVal = 'No está en lista';
+
+      if (window.WhatsAppAnalyticsEngine) {
+        const engine = new window.WhatsAppAnalyticsEngine();
+        const agencyObj = engine.agenciesCatalog.find(a => a.nombre === agencyVal);
+        if (agencyObj) {
+          bankName = agencyObj.banco || 'N/A';
+          cantonName = agencyObj.canton || '';
+          provinciaName = agencyObj.provincia || '';
+        }
+        const techObj = engine.techniciansCatalog.find(t => t.nombre === techVal);
+        if (techObj) {
+          providerVal = techObj.proveedor || 'No está en lista';
+        }
+      }
+
+      const newRecord = {
+        id: 'nt_' + Date.now(),
+        timestamp: timestamp,
+        monthKey: monthObj.key,
+        monthName: monthObj.name,
+        agencyName: agencyVal,
+        bankName: bankName,
+        cantonName: cantonName,
+        provinciaName: provinciaName,
+        technicianName: techVal,
+        technicianProvider: providerVal,
+        details: detailsVal,
+        status: 'PENDIENTE',
+        ticketCode: null,
+        source: 'WhatsApp / Manual',
+        createdAt: new Date().toISOString()
+      };
+
+      noTicketSupports.unshift(newRecord);
+      chrome.storage.local.set({ noTicketSupports: noTicketSupports }, () => {
+        if (noTicketDetails) noTicketDetails.value = '';
+        renderNoTicketTab();
+      });
+    });
+  }
+
+  if (autoMatchTicketsBtn) {
+    autoMatchTicketsBtn.addEventListener('click', () => {
+      chrome.storage.local.get(['activityLogs', 'ticketLogs'], (res) => {
+        const logs = res.activityLogs || res.ticketLogs || [];
+        let matchCount = 0;
+
+        noTicketSupports.forEach(record => {
+          if (record.status === 'PENDIENTE') {
+            const matchingLog = logs.find(log => {
+              if (!log.ticketCode) return false;
+              const text = (log.text || '').toLowerCase();
+              const tech = record.technicianName.toLowerCase();
+              const agency = record.agencyName.toLowerCase();
+              return text.includes(tech) || text.includes(agency);
+            });
+
+            if (matchingLog) {
+              record.status = 'ASIGNADO';
+              record.ticketCode = matchingLog.ticketCode;
+              record.matchedAt = new Date().toISOString();
+              matchCount++;
+            }
+          }
+        });
+
+        if (matchCount > 0) {
+          chrome.storage.local.set({ noTicketSupports: noTicketSupports }, () => {
+            alert(`Se emparejaron ${matchCount} atenciones con tickets de la bitácora.`);
+            renderNoTicketTab();
+          });
+        } else {
+          alert("No se encontraron nuevos emparejamientos automáticos en la bitácora.");
+        }
+      });
+    });
+  }
+
+  if (exportNoTicketExcelBtn) {
+    exportNoTicketExcelBtn.addEventListener('click', () => {
+      if (!window.XLSX) {
+        alert("Error: La librería SheetJS (XLSX) no está disponible.");
+        return;
+      }
+
+      const selectedMonth = noTicketMonthFilter ? noTicketMonthFilter.value : '2026-09';
+      let filtered = [...noTicketSupports];
+
+      if (selectedMonth !== 'TODOS') {
+        filtered = filtered.filter(item => {
+          const itemKey = item.monthKey || (item.timestamp ? item.timestamp.slice(0, 7) : '');
+          return itemKey === selectedMonth;
+        });
+      }
+
+      if (filtered.length === 0) {
+        alert("No hay atenciones registradas para exportar en el periodo seleccionado.");
+        return;
+      }
+
+      const exportRows = filtered.map(r => ({
+        'ID Registro': r.id,
+        'Fecha y Hora': r.timestamp ? new Date(r.timestamp).toLocaleString() : 'N/A',
+        'Mes': r.monthName || 'Septiembre 2026',
+        'Agencia': r.agencyName,
+        'Banco': r.bankName || 'N/A',
+        'Ubicación (Cantón / Prov)': `${r.cantonName || ''} • ${r.provinciaName || ''}`,
+        'Técnico Asignado': r.technicianName,
+        'Proveedor / Empresa': r.technicianProvider || 'No está en lista',
+        'Detalles u Observaciones': r.details || '',
+        'Estado Ticket': r.status === 'ASIGNADO' ? 'TICKET ASIGNADO' : 'PENDIENTE TICKET',
+        'Código de Ticket': r.ticketCode || 'PENDIENTE',
+        'Origen': r.source || 'WhatsApp / Manual'
+      }));
+
+      const ws = XLSX.utils.json_to_sheet(exportRows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Atenciones Sin Ticket");
+
+      const filename = `Reporte_Atenciones_Sin_Ticket_${selectedMonth}.xlsx`;
+      XLSX.writeFile(wb, filename);
+    });
+  }
+
+  if (noTicketMonthFilter) {
+    noTicketMonthFilter.addEventListener('change', () => {
+      renderNoTicketTab();
+    });
+  }
+
+  if (clearNoTicketSearch && noTicketSearchInput) {
+    noTicketSearchInput.addEventListener('input', () => {
+      if (noTicketSearchInput.value.trim().length > 0) {
+        clearNoTicketSearch.classList.remove('hidden');
+      } else {
+        clearNoTicketSearch.classList.add('hidden');
+      }
+      renderNoTicketTab();
+    });
+    clearNoTicketSearch.addEventListener('click', () => {
+      noTicketSearchInput.value = '';
+      clearNoTicketSearch.classList.add('hidden');
+      renderNoTicketTab();
     });
   }
 });
