@@ -734,6 +734,83 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  function processRegularizationMessage(msg) {
+    const ticketCode = msg.ticketCodeFound;
+    if (!ticketCode) return false;
+
+    const agencyVal = msg.agency;
+    const techVal = msg.technician;
+    const textLower = (msg.text || '').toLowerCase();
+
+    // 1. Buscar si existe una atención PENDIENTE previa en noTicketSupports que coincida
+    const pendingRecord = noTicketSupports.find(r => {
+      if (r.status !== 'PENDIENTE') return false;
+      const agMatch = agencyVal && r.agencyName && (
+        r.agencyName.toLowerCase().includes(agencyVal.toLowerCase()) || 
+        agencyVal.toLowerCase().includes(r.agencyName.toLowerCase())
+      );
+      const techMatch = techVal && r.technicianName && (
+        r.technicianName.toLowerCase().includes(techVal.toLowerCase()) ||
+        techVal.toLowerCase().includes(r.technicianName.toLowerCase())
+      );
+      const textMatch = agencyVal && (r.details || '').toLowerCase().includes(agencyVal.toLowerCase());
+      return agMatch || techMatch || textMatch;
+    });
+
+    if (pendingRecord) {
+      pendingRecord.status = 'ASIGNADO';
+      pendingRecord.ticketCode = ticketCode;
+      pendingRecord.matchedAt = new Date().toISOString();
+      if (!pendingRecord.details.includes(ticketCode)) {
+        pendingRecord.details += ` [Regularizado con ticket: ${ticketCode}]`;
+      }
+      return true;
+    } else {
+      // 2. Si no existía registro previo, se registra como ASIGNADO directamente en Sin Ticket
+      const timestamp = msg.timestamp || new Date().toISOString();
+      const monthObj = getMonthNameKey(timestamp);
+      const agencyName = agencyVal || 'Sin Ubicación Especificada';
+      const techName = techVal || 'Por Asignar';
+
+      let bankName = msg.bank || 'N/A';
+      let cantonName = '';
+      let provinciaName = '';
+      let providerVal = msg.provider || 'No está en lista';
+
+      if (window.WhatsAppAnalyticsEngine) {
+        const engine = new window.WhatsAppAnalyticsEngine();
+        const agencyObj = engine.agenciesCatalog.find(a => a.agencia === agencyName);
+        if (agencyObj) {
+          bankName = engine.formatBankAbbreviation(agencyObj.empresa || agencyObj.banco);
+          cantonName = agencyObj.canton || '';
+          provinciaName = agencyObj.provincia || '';
+        }
+      }
+
+      const newRecord = {
+        id: 'nt_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+        timestamp: timestamp,
+        monthKey: monthObj.key,
+        monthName: monthObj.name,
+        agencyName: agencyName,
+        bankName: bankName,
+        cantonName: cantonName,
+        provinciaName: provinciaName,
+        technicianName: techName,
+        technicianProvider: providerVal,
+        details: msg.text + ` [Regularizado directamente]`,
+        status: 'ASIGNADO',
+        ticketCode: ticketCode,
+        matchedAt: new Date().toISOString(),
+        source: 'WhatsApp Regularización',
+        createdAt: new Date().toISOString()
+      };
+
+      noTicketSupports.unshift(newRecord);
+      return true;
+    }
+  }
+
   if (autoRoutePendingBtn) {
     autoRoutePendingBtn.addEventListener('click', () => {
       if (!lastOrchestratedResult || !lastOrchestratedResult.evaluatedMessages) {
@@ -741,59 +818,72 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
       }
 
-      const pendingMsgs = lastOrchestratedResult.evaluatedMessages.filter(m => m.category === 'TICKET_PENDIENTE');
+      const routableMsgs = lastOrchestratedResult.evaluatedMessages.filter(m => 
+        m.category === 'TICKET_PENDIENTE' || m.category === 'REGULARIZACION' || m.isRegularization
+      );
 
-      if (pendingMsgs.length === 0) {
-        alert("No se encontraron mensajes clasificados como 'Ticket Pendiente' en la evaluación actual.");
+      if (routableMsgs.length === 0) {
+        alert("No se encontraron mensajes clasificados como 'Ticket Pendiente' o 'Regularización' en la evaluación actual.");
         return;
       }
 
       let addedCount = 0;
-      pendingMsgs.forEach(msg => {
-        const timestamp = msg.timestamp || new Date().toISOString();
-        const monthObj = getMonthNameKey(timestamp);
-        const agencyVal = msg.agency || 'Sin Ubicación Especificada';
-        const techVal = msg.technician || 'Por Asignar';
+      let matchedCount = 0;
 
-        let bankName = msg.bank || 'N/A';
-        let cantonName = '';
-        let provinciaName = '';
-        let providerVal = msg.provider || 'No está en lista';
+      routableMsgs.forEach(msg => {
+        if (msg.category === 'REGULARIZACION' || msg.isRegularization) {
+          const matched = processRegularizationMessage(msg);
+          if (matched) matchedCount++;
+          else addedCount++;
+        } else {
+          const timestamp = msg.timestamp || new Date().toISOString();
+          const monthObj = getMonthNameKey(timestamp);
+          const agencyVal = msg.agency || 'Sin Ubicación Especificada';
+          const techVal = msg.technician || 'Por Asignar';
 
-        if (window.WhatsAppAnalyticsEngine) {
-          const engine = new window.WhatsAppAnalyticsEngine();
-          const agencyObj = engine.agenciesCatalog.find(a => a.agencia === agencyVal);
-          if (agencyObj) {
-            bankName = engine.formatBankAbbreviation(agencyObj.empresa || agencyObj.banco);
-            cantonName = agencyObj.canton || '';
-            provinciaName = agencyObj.provincia || '';
+          let bankName = msg.bank || 'N/A';
+          let cantonName = '';
+          let provinciaName = '';
+          let providerVal = msg.provider || 'No está en lista';
+
+          if (window.WhatsAppAnalyticsEngine) {
+            const engine = new window.WhatsAppAnalyticsEngine();
+            const agencyObj = engine.agenciesCatalog.find(a => a.agencia === agencyVal);
+            if (agencyObj) {
+              bankName = engine.formatBankAbbreviation(agencyObj.empresa || agencyObj.banco);
+              cantonName = agencyObj.canton || '';
+              provinciaName = agencyObj.provincia || '';
+            }
           }
+
+          const newRecord = {
+            id: 'nt_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+            timestamp: timestamp,
+            monthKey: monthObj.key,
+            monthName: monthObj.name,
+            agencyName: agencyVal,
+            bankName: bankName,
+            cantonName: cantonName,
+            provinciaName: provinciaName,
+            technicianName: techVal,
+            technicianProvider: providerVal,
+            details: msg.text,
+            status: 'PENDIENTE',
+            ticketCode: null,
+            source: 'WhatsApp Orquestador',
+            createdAt: new Date().toISOString()
+          };
+
+          noTicketSupports.unshift(newRecord);
+          addedCount++;
         }
-
-        const newRecord = {
-          id: 'nt_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
-          timestamp: timestamp,
-          monthKey: monthObj.key,
-          monthName: monthObj.name,
-          agencyName: agencyVal,
-          bankName: bankName,
-          cantonName: cantonName,
-          provinciaName: provinciaName,
-          technicianName: techVal,
-          technicianProvider: providerVal,
-          details: msg.text,
-          status: 'PENDIENTE',
-          ticketCode: null,
-          source: 'WhatsApp Orquestador',
-          createdAt: new Date().toISOString()
-        };
-
-        noTicketSupports.unshift(newRecord);
-        addedCount++;
       });
 
       chrome.storage.local.set({ noTicketSupports: noTicketSupports }, () => {
-        alert(`\u00a1\u00c9xito! Se derivaron ${addedCount} atenciones al m\u00f3dulo 'Sin Ticket' (${getMonthNameKey(new Date()).name}).`);
+        let msgStr = `\u00a1Procesamiento finalizado! `;
+        if (matchedCount > 0) msgStr += `Se regularizaron y emparejaron ${matchedCount} atenciones. `;
+        if (addedCount > 0) msgStr += `Se registraron ${addedCount} atenciones pendientes.`;
+        alert(msgStr);
         populateNoTicketDropdowns();
         renderNoTicketTab();
       });

@@ -18584,6 +18584,7 @@ class WhatsAppMessageOrchestrator {
 
   static PATTERNS = {
     TICKET_CODE: /(?:AKR-RQ-\d+|TK-?\d+|TKT-?\d+|SOP-?\d+|OP-?\d+|ticket\s*#?\s*:?\s*[A-Z0-9-]+)/i,
+    REGULARIZATION: /(?:regulariza|regularizar|regularizaci[oó]n|regularizado|se\s+regulariza)/i,
     PENDING_SUPPORT: /(?:soporte|atención|atencion|incidencia|falla|revisión|revision|solicito\s+ticket|requiere\s+ticket|pendiente\s+ticket|mant\.|mantenimiento|cambio\s+de|impresora|pantalla|atm|pos|teclado|disco|ups|red|punto\s+de\s+red|bóveda|boveda|transferencia|ayuda\s+con)/i,
     NOISE_SPAM: /^(?:hola|buenos?\s+d[íi]as|buenas?\s+tardes|buenas?\s+noches|gracias|muchas\s+gracias|ok|listo|recibido|de\s+nada|saludos|confirmado|entendido|👍|bgr|bp)\.?$/i
   };
@@ -18606,13 +18607,26 @@ class WhatsAppMessageOrchestrator {
         stats.total++;
         const text = msg.text || '';
         const ticketMatch = text.match(WhatsAppMessageOrchestrator.PATTERNS.TICKET_CODE);
+        const isRegularization = WhatsAppMessageOrchestrator.PATTERNS.REGULARIZATION.test(text);
 
         let category = 'FALLBACK_DEFAULT';
         let categoryLabel = 'Fallback / IA';
         let badgeClass = 'matrix-badge-fallback';
         let routingDecision = 'Ejecutar opciones por defecto o procesamiento IA';
 
-        if (ticketMatch) {
+        if (isRegularization && ticketMatch) {
+          category = 'REGULARIZACION';
+          categoryLabel = 'Regularización';
+          badgeClass = 'matrix-badge-pending';
+          routingDecision = `Deriva a 'Sin Ticket' y empareja automáticamente con la atención pendiente vinculando el ticket ${ticketMatch[0].toUpperCase()}`;
+          stats.pendingTicket++;
+        } else if (isRegularization) {
+          category = 'TICKET_PENDIENTE';
+          categoryLabel = 'Regularización Pendiente';
+          badgeClass = 'matrix-badge-pending';
+          routingDecision = 'Deriva a Módulo "Sin Ticket" para regularizar atención histórica';
+          stats.pendingTicket++;
+        } else if (ticketMatch) {
           category = 'CON_TICKET';
           categoryLabel = 'Con Ticket';
           badgeClass = 'matrix-badge-ticket';
@@ -18640,6 +18654,7 @@ class WhatsAppMessageOrchestrator {
           categoryLabel,
           badgeClass,
           routingDecision,
+          isRegularization,
           threadId: thread.id,
           threadContext: thread.contextSummary,
           ticketCodeFound: ticketMatch ? ticketMatch[0].toUpperCase() : null
