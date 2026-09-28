@@ -650,7 +650,157 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // --- Funciones Manuales de IA (Pestaña Acciones) ---
+  // --- Sección de Acciones como Orquestador Central (Matriz de Ingreso & Hilos) ---
+  let lastOrchestratedResult = null;
+
+  const evaluateOrchestratorBtn = document.getElementById('evaluateOrchestratorBtn');
+  const autoRoutePendingBtn = document.getElementById('autoRoutePendingBtn');
+  const orchestratorGroupLabel = document.getElementById('orchestratorGroupLabel');
+  const kpiMatrixTicket = document.getElementById('kpiMatrixTicket');
+  const kpiMatrixPending = document.getElementById('kpiMatrixPending');
+  const kpiMatrixNoise = document.getElementById('kpiMatrixNoise');
+  const kpiMatrixFallback = document.getElementById('kpiMatrixFallback');
+
+  function runOrchestratorEvaluation(messagesList) {
+    if (!window.WhatsAppMessageOrchestrator || !messagesList || messagesList.length === 0) {
+      if (fetchedMessagesDiv) {
+        fetchedMessagesDiv.innerHTML = '<em style="color:#666; font-size:11px;">Obt&eacute;n mensajes de WhatsApp arriba para evaluar la matriz de ingreso.</em>';
+      }
+      return;
+    }
+
+    const engine = window.WhatsAppAnalyticsEngine ? new window.WhatsAppAnalyticsEngine() : null;
+    const orchestrator = new window.WhatsAppMessageOrchestrator(engine);
+    const targetGroup = waGroupInput ? waGroupInput.value.trim() : "Soporte en Sitio Akros";
+
+    lastOrchestratedResult = orchestrator.evaluateMessages(messagesList, targetGroup);
+
+    const stats = lastOrchestratedResult.stats;
+    if (kpiMatrixTicket) kpiMatrixTicket.textContent = stats.withTicket;
+    if (kpiMatrixPending) kpiMatrixPending.textContent = stats.pendingTicket;
+    if (kpiMatrixNoise) kpiMatrixNoise.textContent = stats.discardedNoise;
+    if (kpiMatrixFallback) kpiMatrixFallback.textContent = stats.fallbackDefault;
+    if (orchestratorGroupLabel) orchestratorGroupLabel.textContent = targetGroup;
+
+    let html = '<div style="display:flex; flex-direction:column; gap:6px;">';
+    lastOrchestratedResult.evaluatedMessages.forEach((msg) => {
+      const displayMsg = (msg.text || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const threadBadge = msg.threadContext 
+        ? `<div class="thread-badge">🧵 Hilo: ${msg.threadContext}</div>` 
+        : '';
+      const bankBadge = msg.bank && msg.bank !== 'N/A' 
+        ? `<span class="bank-badge">${msg.bank}</span>` 
+        : '';
+
+      html += `
+        <div style="background:#ffffff; border:1px solid #cfd8dc; border-radius:6px; padding:6px 8px; font-size:11px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <div style="display:flex; align-items:center; gap:4px;">
+              <input type="checkbox" id="msg-${msg.index}" data-index="${msg.index}">
+              <span class="matrix-badge ${msg.badgeClass}">${msg.categoryLabel}</span>
+              ${bankBadge}
+            </div>
+            <span style="font-size:9.5px; color:#777;">${msg.sender}</span>
+          </div>
+          <div style="color:#222; margin-bottom:3px; font-weight:500;">${displayMsg}</div>
+          ${threadBadge}
+          <div style="font-size:9px; color:#555; margin-top:3px; font-style:italic;">
+            📍 Decisi&oacute;n: ${msg.routingDecision}
+          </div>
+        </div>
+      `;
+    });
+    html += '</div>';
+
+    fetchedMessagesDiv.innerHTML = html;
+
+    fetchedMessagesDiv.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+      checkbox.addEventListener('change', (event) => {
+        const idx = parseInt(event.target.getAttribute('data-index'));
+        if (event.target.checked) selectedMessageIndices.add(idx);
+        else selectedMessageIndices.delete(idx);
+        updateButtonStates();
+      });
+    });
+  }
+
+  if (evaluateOrchestratorBtn) {
+    evaluateOrchestratorBtn.addEventListener('click', () => {
+      if (fetchedMessages && fetchedMessages.length > 0) {
+        runOrchestratorEvaluation(fetchedMessages);
+      } else if (fetchMessagesBtn) {
+        fetchMessagesBtn.click();
+      }
+    });
+  }
+
+  if (autoRoutePendingBtn) {
+    autoRoutePendingBtn.addEventListener('click', () => {
+      if (!lastOrchestratedResult || !lastOrchestratedResult.evaluatedMessages) {
+        alert("Por favor obtenga o evalúe mensajes primero con el Orquestador.");
+        return;
+      }
+
+      const pendingMsgs = lastOrchestratedResult.evaluatedMessages.filter(m => m.category === 'TICKET_PENDIENTE');
+
+      if (pendingMsgs.length === 0) {
+        alert("No se encontraron mensajes clasificados como 'Ticket Pendiente' en la evaluación actual.");
+        return;
+      }
+
+      let addedCount = 0;
+      pendingMsgs.forEach(msg => {
+        const timestamp = msg.timestamp || new Date().toISOString();
+        const monthObj = getMonthNameKey(timestamp);
+        const agencyVal = msg.agency || 'Sin Ubicación Especificada';
+        const techVal = msg.technician || 'Por Asignar';
+
+        let bankName = msg.bank || 'N/A';
+        let cantonName = '';
+        let provinciaName = '';
+        let providerVal = msg.provider || 'No está en lista';
+
+        if (window.WhatsAppAnalyticsEngine) {
+          const engine = new window.WhatsAppAnalyticsEngine();
+          const agencyObj = engine.agenciesCatalog.find(a => a.agencia === agencyVal);
+          if (agencyObj) {
+            bankName = engine.formatBankAbbreviation(agencyObj.empresa || agencyObj.banco);
+            cantonName = agencyObj.canton || '';
+            provinciaName = agencyObj.provincia || '';
+          }
+        }
+
+        const newRecord = {
+          id: 'nt_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+          timestamp: timestamp,
+          monthKey: monthObj.key,
+          monthName: monthObj.name,
+          agencyName: agencyVal,
+          bankName: bankName,
+          cantonName: cantonName,
+          provinciaName: provinciaName,
+          technicianName: techVal,
+          technicianProvider: providerVal,
+          details: msg.text,
+          status: 'PENDIENTE',
+          ticketCode: null,
+          source: 'WhatsApp Orquestador',
+          createdAt: new Date().toISOString()
+        };
+
+        noTicketSupports.unshift(newRecord);
+        addedCount++;
+      });
+
+      chrome.storage.local.set({ noTicketSupports: noTicketSupports }, () => {
+        alert(`\u00a1\u00c9xito! Se derivaron ${addedCount} atenciones al m\u00f3dulo 'Sin Ticket' (${getMonthNameKey(new Date()).name}).`);
+        populateNoTicketDropdowns();
+        renderNoTicketTab();
+      });
+    });
+  }
+
+  // --- Funciones Manuales de IA & Captura de Mensajes ---
   if (fetchMessagesBtn) {
     fetchMessagesBtn.addEventListener('click', async () => {
       fetchMessagesBtn.textContent = 'Obteniendo...';
@@ -677,30 +827,7 @@ document.addEventListener('DOMContentLoaded', function () {
           if (response && response.messages && response.messages.length > 0) {
             fetchedMessages = response.messages;
             const messagesToShow = fetchedMessages.slice(-messageCount);
-
-            let messageListHtml = '<ul style="margin:0; padding:0; list-style:none;">';
-            messagesToShow.forEach((msg, index) => {
-              const originalIndex = fetchedMessages.length - messageCount + index;
-              const displayMsg = msg.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-              messageListHtml += `
-                <li>
-                  <input type="checkbox" id="msg-${originalIndex}" data-index="${originalIndex}">
-                  <label for="msg-${originalIndex}">${displayMsg}</label>
-                </li>
-              `;
-            });
-            messageListHtml += '</ul>';
-
-            fetchedMessagesDiv.innerHTML = `<p style="margin-bottom: 5px;"><strong>Mostrando ${messagesToShow.length} mensajes recientes:</strong></p>${messageListHtml}`;
-
-            fetchedMessagesDiv.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-              checkbox.addEventListener('change', (event) => {
-                const idx = parseInt(event.target.getAttribute('data-index'));
-                if (event.target.checked) selectedMessageIndices.add(idx);
-                else selectedMessageIndices.delete(idx);
-                updateButtonStates();
-              });
-            });
+            runOrchestratorEvaluation(messagesToShow);
           } else {
             displayInfoMessage(fetchedMessagesDiv, '<p>No se encontraron mensajes o abre un chat en WhatsApp Web.</p>');
           }
@@ -713,17 +840,14 @@ document.addEventListener('DOMContentLoaded', function () {
           );
         };
 
-        // Intentar enviar mensaje al content script
         chrome.tabs.sendMessage(tab.id, { action: "getMessages" }, async function (response) {
           if (chrome.runtime.lastError) {
             console.warn('[Popup] Error de conexión inicial con content.js:', chrome.runtime.lastError.message);
-            // Intentar inyección dinámica de content.js mediante chrome.scripting
             try {
               await chrome.scripting.executeScript({
                 target: { tabId: tab.id },
                 files: ['content.js']
               });
-              // Esperar un breve momento y reintentar la comunicación
               setTimeout(() => {
                 chrome.tabs.sendMessage(tab.id, { action: "getMessages" }, function (retryResponse) {
                   if (chrome.runtime.lastError) {
@@ -1059,20 +1183,47 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
       }
 
-      const exportRows = filtered.map(r => ({
-        'ID Registro': r.id,
-        'Fecha y Hora': r.timestamp ? new Date(r.timestamp).toLocaleString() : 'N/A',
-        'Mes': r.monthName || 'Septiembre 2026',
-        'Agencia': r.agencyName,
-        'Banco': r.bankName || 'N/A',
-        'Ubicación (Cantón / Prov)': `${r.cantonName || ''} • ${r.provinciaName || ''}`,
-        'Técnico Asignado': r.technicianName,
-        'Proveedor / Empresa': r.technicianProvider || 'No está en lista',
-        'Detalles u Observaciones': r.details || '',
-        'Estado Ticket': r.status === 'ASIGNADO' ? 'TICKET ASIGNADO' : 'PENDIENTE TICKET',
-        'Código de Ticket': r.ticketCode || 'PENDIENTE',
-        'Origen': r.source || 'WhatsApp / Manual'
-      }));
+      const exportRows = filtered.map(r => {
+        let bankAbbr = r.bankName || 'N/A';
+        let canton = r.cantonName || '';
+        let provincia = r.provinciaName || '';
+        let region = '';
+        let seccion = '';
+
+        if (window.WhatsAppAnalyticsEngine) {
+          const engine = new window.WhatsAppAnalyticsEngine();
+          bankAbbr = engine.formatBankAbbreviation(r.bankName || engine.getAgencyBank(r.agencyName));
+          const match = engine.agenciesCatalog.find(a => a.agencia === r.agencyName);
+          if (match) {
+            canton = canton || match.canton || '';
+            provincia = provincia || match.provincia || '';
+            region = match.region || '';
+            seccion = match.seccion || '';
+          }
+        }
+
+        const locationParts = [];
+        if (canton) locationParts.push(`Cantón: ${canton}`);
+        if (provincia) locationParts.push(`Prov: ${provincia}`);
+        if (region) locationParts.push(region);
+        if (seccion) locationParts.push(seccion);
+        const locationStr = locationParts.join(' • ') || 'N/A';
+
+        return {
+          'ID Registro': r.id,
+          'Fecha y Hora': r.timestamp ? new Date(r.timestamp).toLocaleString() : 'N/A',
+          'Mes': r.monthName || 'Septiembre 2026',
+          'Agencia': r.agencyName,
+          'Banco': bankAbbr,
+          'Ubicación Completa (Cantón / Prov / Región / Sección)': locationStr,
+          'Técnico Asignado': r.technicianName,
+          'Proveedor / Empresa': r.technicianProvider || 'No está en lista',
+          'Detalles u Observaciones': r.details || '',
+          'Estado Ticket': r.status === 'ASIGNADO' ? 'TICKET ASIGNADO' : 'PENDIENTE TICKET',
+          'Código de Ticket': r.ticketCode || 'PENDIENTE',
+          'Origen': r.source || 'WhatsApp Orquestador / Manual'
+        };
+      });
 
       const ws = XLSX.utils.json_to_sheet(exportRows);
       const wb = XLSX.utils.book_new();

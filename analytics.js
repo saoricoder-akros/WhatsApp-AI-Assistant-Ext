@@ -18440,6 +18440,224 @@ class WhatsAppAnalyticsEngine {
   }
 }
 
+class ConversationThreadManager {
+  constructor(analyticsEngine) {
+    this.engine = analyticsEngine || (window.WhatsAppAnalyticsEngine ? new window.WhatsAppAnalyticsEngine() : null);
+  }
+
+  processMessagesIntoThreads(messagesList = [], timeWindowMinutes = 15) {
+    if (!messagesList || messagesList.length === 0) return [];
+
+    const timeWindowMs = timeWindowMinutes * 60 * 1000;
+    const parsedMessages = messagesList.map((rawMsg, index) => {
+      let text = '';
+      let sender = 'Usuario WhatsApp';
+      let timestamp = new Date().toISOString();
+
+      if (typeof rawMsg === 'string') {
+        text = rawMsg;
+        const match = rawMsg.match(/^([^:]+):\s*(.+)$/);
+        if (match) {
+          sender = match[1].trim();
+          text = match[2].trim();
+        }
+      } else if (typeof rawMsg === 'object' && rawMsg !== null) {
+        text = rawMsg.text || rawMsg.description || rawMsg.replyText || '';
+        sender = rawMsg.senderName || rawMsg.sender || 'Usuario WhatsApp';
+        timestamp = rawMsg.timestamp || new Date().toISOString();
+      }
+
+      let agency = null;
+      let bank = 'N/A';
+      let technician = null;
+      let provider = 'No está en lista';
+
+      if (this.engine) {
+        for (const item of this.engine.agenciesCatalog) {
+          const reg = new RegExp(`\\b${this.engine.escapeRegExp(item.agencia)}\\b`, 'i');
+          if (reg.test(text)) {
+            agency = item.agencia;
+            bank = this.engine.formatBankAbbreviation(item.empresa || item.banco);
+            break;
+          }
+        }
+        for (const tObj of this.engine.techniciansCatalog) {
+          const tName = this.engine.getTechnicianName(tObj);
+          if (tName.toLowerCase() === 'cristian castro') continue;
+          const reg = new RegExp(`\\b${this.engine.escapeRegExp(tName)}\\b`, 'i');
+          if (reg.test(text)) {
+            technician = tName;
+            provider = this.engine.getTechnicianProvider(tName);
+            break;
+          }
+        }
+      }
+
+      return {
+        id: `msg_${index}_${Date.now()}`,
+        index,
+        sender,
+        text,
+        timestamp,
+        agency,
+        bank,
+        technician,
+        provider,
+        inheritedContext: false
+      };
+    });
+
+    const threads = [];
+    let currentThread = null;
+
+    parsedMessages.forEach(msg => {
+      const msgTime = new Date(msg.timestamp).getTime();
+      let attachedToThread = false;
+
+      if (currentThread) {
+        const lastTime = new Date(currentThread.lastTimestamp).getTime();
+        const sameAgency = msg.agency && currentThread.agency === msg.agency;
+        const timeDiff = Math.abs(msgTime - lastTime);
+
+        if (timeDiff <= timeWindowMs || sameAgency) {
+          attachedToThread = true;
+          currentThread.messages.push(msg);
+          currentThread.lastTimestamp = msg.timestamp;
+          currentThread.senders.add(msg.sender);
+
+          if (msg.agency && !currentThread.agency) {
+            currentThread.agency = msg.agency;
+            currentThread.bank = msg.bank;
+          }
+          if (msg.technician && !currentThread.technician) {
+            currentThread.technician = msg.technician;
+            currentThread.provider = msg.provider;
+          }
+        }
+      }
+
+      if (!attachedToThread) {
+        currentThread = {
+          id: `thread_${Date.now()}_${threads.length + 1}`,
+          agency: msg.agency || null,
+          bank: msg.bank || 'N/A',
+          technician: msg.technician || null,
+          provider: msg.provider || 'No está en lista',
+          startTimestamp: msg.timestamp,
+          lastTimestamp: msg.timestamp,
+          senders: new Set([msg.sender]),
+          messages: [msg],
+          contextSummary: ''
+        };
+        threads.push(currentThread);
+      }
+
+      if (!msg.agency && currentThread.agency) {
+        msg.agency = currentThread.agency;
+        msg.bank = currentThread.bank;
+        msg.inheritedContext = true;
+      }
+      if (!msg.technician && currentThread.technician) {
+        msg.technician = currentThread.technician;
+        msg.provider = currentThread.provider;
+        msg.inheritedContext = true;
+      }
+    });
+
+    threads.forEach(t => {
+      const summaryParts = [];
+      if (t.agency) summaryParts.push(`Agencia: ${t.agency} [${t.bank}]`);
+      if (t.technician) summaryParts.push(`Técnico: ${t.technician} (${t.provider})`);
+      summaryParts.push(`Participantes: ${Array.from(t.senders).join(', ')}`);
+      t.contextSummary = summaryParts.join(' • ');
+    });
+
+    return threads;
+  }
+}
+
+class WhatsAppMessageOrchestrator {
+  constructor(analyticsEngine) {
+    this.engine = analyticsEngine || (window.WhatsAppAnalyticsEngine ? new window.WhatsAppAnalyticsEngine() : null);
+    this.threadManager = new ConversationThreadManager(this.engine);
+  }
+
+  static PATTERNS = {
+    TICKET_CODE: /(?:AKR-RQ-\d+|TK-?\d+|TKT-?\d+|SOP-?\d+|OP-?\d+|ticket\s*#?\s*:?\s*[A-Z0-9-]+)/i,
+    PENDING_SUPPORT: /(?:soporte|atención|atencion|incidencia|falla|revisión|revision|solicito\s+ticket|requiere\s+ticket|pendiente\s+ticket|mant\.|mantenimiento|cambio\s+de|impresora|pantalla|atm|pos|teclado|disco|ups|red|punto\s+de\s+red|bóveda|boveda|transferencia|ayuda\s+con)/i,
+    NOISE_SPAM: /^(?:hola|buenos?\s+d[íi]as|buenas?\s+tardes|buenas?\s+noches|gracias|muchas\s+gracias|ok|listo|recibido|de\s+nada|saludos|confirmado|entendido|👍|bgr|bp)\.?$/i
+  };
+
+  evaluateMessages(rawMessages, targetGroup = "Soporte en Sitio Akros") {
+    const threads = this.threadManager.processMessagesIntoThreads(rawMessages);
+
+    const stats = {
+      total: 0,
+      withTicket: 0,
+      pendingTicket: 0,
+      discardedNoise: 0,
+      fallbackDefault: 0
+    };
+
+    const evaluatedMessages = [];
+
+    threads.forEach(thread => {
+      thread.messages.forEach(msg => {
+        stats.total++;
+        const text = msg.text || '';
+        const ticketMatch = text.match(WhatsAppMessageOrchestrator.PATTERNS.TICKET_CODE);
+
+        let category = 'FALLBACK_DEFAULT';
+        let categoryLabel = 'Fallback / IA';
+        let badgeClass = 'matrix-badge-fallback';
+        let routingDecision = 'Ejecutar opciones por defecto o procesamiento IA';
+
+        if (ticketMatch) {
+          category = 'CON_TICKET';
+          categoryLabel = 'Con Ticket';
+          badgeClass = 'matrix-badge-ticket';
+          routingDecision = 'Deriva a Automatización MS Teams y Consolidado';
+          stats.withTicket++;
+        } else if (WhatsAppMessageOrchestrator.PATTERNS.NOISE_SPAM.test(text.trim()) || text.trim().length < 3) {
+          category = 'RUIDO_SPAM';
+          categoryLabel = 'Ruido / Spam';
+          badgeClass = 'matrix-badge-noise';
+          routingDecision = 'Descartado inteligentemente sin valor operativo';
+          stats.discardedNoise++;
+        } else if (WhatsAppMessageOrchestrator.PATTERNS.PENDING_SUPPORT.test(text) || msg.agency || msg.technician) {
+          category = 'TICKET_PENDIENTE';
+          categoryLabel = 'Ticket Pendiente';
+          badgeClass = 'matrix-badge-pending';
+          routingDecision = 'Deriva a Módulo "Sin Ticket" para atención histórica';
+          stats.pendingTicket++;
+        } else {
+          stats.fallbackDefault++;
+        }
+
+        evaluatedMessages.push({
+          ...msg,
+          category,
+          categoryLabel,
+          badgeClass,
+          routingDecision,
+          threadId: thread.id,
+          threadContext: thread.contextSummary,
+          ticketCodeFound: ticketMatch ? ticketMatch[0].toUpperCase() : null
+        });
+      });
+    });
+
+    return {
+      targetGroup,
+      stats,
+      threads,
+      evaluatedMessages
+    };
+  }
+}
+
 if (typeof window !== 'undefined') {
   window.WhatsAppAnalyticsEngine = WhatsAppAnalyticsEngine;
+  window.ConversationThreadManager = ConversationThreadManager;
+  window.WhatsAppMessageOrchestrator = WhatsAppMessageOrchestrator;
 }

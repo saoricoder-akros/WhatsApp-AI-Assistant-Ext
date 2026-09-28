@@ -203,12 +203,18 @@
       .badge-off { background-color: #c62828; }
       .badge-critical { background-color: #c62828; color: white; }
       .badge-confirmed { background-color: #00796b; color: white; padding: 1px 5px; border-radius: 4px; font-size: 9px; margin-left: 4px; }
-      .bank-badge { display: inline-block; font-size: 8.5px; font-weight: 600; color: #555555; background-color: #f0f0f0; border: 1px solid #dcdcdc; padding: 1px 6px; border-radius: 10px; margin-left: 4px; line-height: 1.2; vertical-align: middle; }
+      .bank-badge { display: inline-block; font-size: 8px; font-weight: 700; color: #475569; background-color: #f1f5f9; border: 1px solid #cbd5e1; padding: 1px 5px; border-radius: 4px; margin-left: 4px; line-height: 1.15; vertical-align: middle; text-transform: uppercase; }
       .source-badge { display: inline-block; font-size: 8.5px; font-weight: 700; padding: 1px 5px; border-radius: 4px; margin-left: 3px; line-height: 1.2; vertical-align: middle; }
       .badge-whatsapp { background-color: #e8f5e9; color: #1b5e20; border: 1px solid #c8e6c9; }
       .badge-aranda { background-color: #eef2ff; color: #3730a3; border: 1px solid #c7d2fe; }
-      .provider-cloud { display: inline-block; font-size: 7.5px; font-weight: 600; letter-spacing: 0.1px; color: #075E54; background-color: rgba(7, 94, 84, 0.06); border: 1px solid rgba(7, 94, 84, 0.18); padding: 0px 4px; border-radius: 6px; margin-bottom: 1px; line-height: 1.15; max-width: 130px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle; }
-      .provider-cloud.not-in-list { color: #c62828; background-color: rgba(198, 40, 40, 0.06); border-color: rgba(198, 40, 40, 0.18); }
+      .provider-cloud { display: inline-block; font-size: 7px; font-weight: 600; letter-spacing: 0.1px; color: #075E54; background-color: rgba(7, 94, 84, 0.04); border: 1px solid rgba(7, 94, 84, 0.14); padding: 0px 3px; border-radius: 4px; margin-bottom: 1px; line-height: 1.1; max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle; }
+      .provider-cloud.not-in-list { color: #c62828; background-color: rgba(198, 40, 40, 0.04); border-color: rgba(198, 40, 40, 0.14); }
+      .matrix-badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 700; text-transform: uppercase; margin-right: 4px; }
+      .matrix-badge-ticket { background-color: #27ae60; color: #ffffff; }
+      .matrix-badge-pending { background-color: #e67e22; color: #ffffff; }
+      .matrix-badge-noise { background-color: #7f8c8d; color: #ffffff; }
+      .matrix-badge-fallback { background-color: #2980b9; color: #ffffff; }
+      .thread-badge { display: inline-block; font-size: 8.5px; font-weight: 600; color: #1e3a8a; background-color: #dbeafe; border: 1px solid #bfdbfe; padding: 1px 5px; border-radius: 4px; margin-top: 2px; }
       .kpi-grid {
         display: grid;
         grid-template-columns: 1fr 1fr 1fr;
@@ -340,14 +346,49 @@
         <div class="tab" data-tab="settings">Configuraci&oacute;n</div>
       </div>
       
-      <!-- Pestaña de Acciones AI -->
+      <!-- Pestaña de Acciones AI (Orquestador Central de Ingreso) -->
       <div id="actionsTab" class="tab-content">
+        <!-- Tarjeta Orquestadora de Ingreso -->
+        <div class="auto-card" style="background-color: #f0f7f4; border-color: #b2dfdb; padding: 8px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <div>
+              <strong style="color: #075E54; font-size: 12px;">🧠 Orquestador Central (Matriz de Ingreso)</strong>
+              <div style="font-size: 10px; color: #128C7E;">Grupo: <span id="orchestratorGroupLabel" style="font-weight: bold;">Soporte en Sitio Akros</span></div>
+            </div>
+            <span class="status-badge badge-on" style="font-size: 9px;">ACTIVO</span>
+          </div>
+
+          <div class="kpi-grid" style="grid-template-columns: 1fr 1fr 1fr 1fr; gap: 4px; margin-bottom: 6px;">
+            <div class="kpi-card" style="padding: 4px;">
+              <div class="kpi-title" style="font-size: 8px; color: #27ae60;">Con Ticket</div>
+              <div id="kpiMatrixTicket" class="kpi-value" style="font-size: 11px; color: #27ae60;">0</div>
+            </div>
+            <div class="kpi-card" style="padding: 4px;">
+              <div class="kpi-title" style="font-size: 8px; color: #e67e22;">Sin Ticket</div>
+              <div id="kpiMatrixPending" class="kpi-value" style="font-size: 11px; color: #e67e22;">0</div>
+            </div>
+            <div class="kpi-card" style="padding: 4px;">
+              <div class="kpi-title" style="font-size: 8px; color: #7f8c8d;">Ruido</div>
+              <div id="kpiMatrixNoise" class="kpi-value" style="font-size: 11px; color: #7f8c8d;">0</div>
+            </div>
+            <div class="kpi-card" style="padding: 4px;">
+              <div class="kpi-title" style="font-size: 8px; color: #2980b9;">Fallback</div>
+              <div id="kpiMatrixFallback" class="kpi-value" style="font-size: 11px; color: #2980b9;">0</div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 4px; margin-bottom: 4px;">
+            <button id="evaluateOrchestratorBtn" style="background-color: #075E54; margin-bottom: 0; padding: 6px; font-size: 11px;">Evaluar Matriz Orquestadora</button>
+            <button id="autoRoutePendingBtn" style="background-color: #e67e22; margin-bottom: 0; padding: 6px; font-size: 11px;">Derivar a 'Sin Ticket'</button>
+          </div>
+        </div>
+
         <details class="user-guide" open>
           <summary>Guia de Uso Rapido</summary>
           <ol>
-            <li>Abre <strong>WhatsApp Web</strong> en el navegador.</li>
-            <li>Haz clic en <strong>"Obtener Mensajes"</strong> para cargar el chat activo.</li>
-            <li>Selecciona mensajes para resumir, responder o buscar tareas pendientes.</li>
+            <li>Abre <strong>WhatsApp Web</strong> en el chat objetivo (ej: Soporte en Sitio Akros).</li>
+            <li>Haz clic en <strong>"Obtener Mensajes"</strong> o <strong>"Evaluar Matriz"</strong>.</li>
+            <li>El orquestador clasifica los hilos y deriva a automatización o "Sin Ticket".</li>
           </ol>
         </details>
 
@@ -361,8 +402,8 @@
           <button id="fetchMessages">Obtener Mensajes</button>
         </div>
 
-        <h3 style="margin: 4px 0; font-size: 12px; color: #075E54;">Mensajes Obtenidos:</h3>
-        <div id="fetchedMessages" class="message-area">Obt&eacute;n mensajes de WhatsApp arriba.</div>
+        <h3 style="margin: 4px 0; font-size: 12px; color: #075E54;">Evaluación de Mensajes e Hilos:</h3>
+        <div id="fetchedMessages" class="message-area">Obt&eacute;n mensajes de WhatsApp arriba para evaluar la matriz de ingreso.</div>
 
         <div class="input-group" style="margin-top: 4px; justify-content: center;">
           <label for="summarizeCount">Resumir &uacute;ltimos:</label>
@@ -372,7 +413,7 @@
 
         <div class="button-group" style="display: flex; flex-direction: column; gap: 4px;">
           <div style="display: flex; gap: 4px;">
-            <button id="summarizeMessages" disabled>Resumir</button>
+            <button id="summarizeMessages" disabled>Resumir IA</button>
             <button id="generateReply" disabled>Generar Respuesta</button>
           </div>
           <div style="display: flex; gap: 4px;">
@@ -381,7 +422,7 @@
           </div>
         </div>
         
-        <h3 style="margin: 4px 0 2px 0; font-size: 12px; color: #075E54;">Resultado Generado:</h3>
+        <h3 style="margin: 4px 0 2px 0; font-size: 12px; color: #075E54;">Resultado Generado / Resumen:</h3>
         <div id="generatedOutput" class="message-area">El resultado aparecer&aacute; aqu&iacute;.</div>
         <div id="contextInfo" class="context-area" style="margin-top: 4px; font-size: 0.85em; color: #555;"></div>
         <div id="analysisInfo" class="context-area" style="margin-top: 4px; font-size: 0.85em; color: #555; border-top: 1px dashed #ccc; padding-top: 4px;"></div>
@@ -527,6 +568,8 @@
               <option value="TODOS">Todos los Meses</option>
               <option value="2026-09" selected>Septiembre 2026</option>
               <option value="2026-08">Agosto 2026</option>
+              <option value="2026-07">Julio 2026</option>
+              <option value="2026-06">Junio 2026</option>
             </select>
           </div>
           <div class="search-input-wrapper">
